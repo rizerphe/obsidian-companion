@@ -3,7 +3,7 @@
 	"name": "Companion",
 	"version": "1.0.1",
 	"minAppVersion": "1.1.16",
-	"description": "Adds a github copilot-like interface for obsidian.",
+	"description": "A github copilot-like interface for obsidian that can use ChatGPT under the hood.",
 	"author": "rizerphe",
 	"authorUrl": "https://github.com/rizerphe",
 	"isDesktopOnly": true
