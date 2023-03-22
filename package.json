@@ -20,5 +20,18 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
+	},
+	"dependencies": {
+		"@types/mustache": "^4.2.2",
+		"@types/react": "^18.0.28",
+		"@types/react-dom": "^18.0.11",
+		"codemirror-companion-extension": "^0.0.2",
+		"esbuild-sass-plugin": "^2.6.0",
+		"mustache": "^4.2.0",
+		"openai": "^3.2.1",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"sass": "^1.59.2",
+		"zod": "^3.21.4"
 	}
 }

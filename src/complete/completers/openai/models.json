@@ -1,0 +1,27 @@
+[
+    {
+        "id": "text-davinci-003",
+        "name": "Davinci-003",
+        "description": "Can do any language task with better quality, longer output, and consistent instruction-following than the curie, babbage, or ada models. Also supports inserting completions within text."
+    },
+    {
+        "id": "text-davinci-002",
+        "name": "Davinci-002",
+        "description": "Similar capabilities to text-davinci-003 but trained with supervised fine-tuning instead of reinforcement learning"
+    },
+    {
+        "id": "curie",
+        "name": "Curie",
+        "description": "Very capable, but faster and lower cost than Davinci."
+    },
+    {
+        "id": "babbage",
+        "name": "Babbage",
+        "description": "Capable of straightforward tasks, very fast, and lower cost."
+    },
+    {
+        "id": "ada",
+        "name": "Ada",
+        "description": "Capable of very simple tasks, usually the fastest model in the GPT-3 series, and lowest cost."
+    }
+]
