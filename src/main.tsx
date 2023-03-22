@@ -324,8 +324,8 @@ class CompanionSettingsTab extends PluginSettingTab {
 			this.reload_signal.reload = false;
 			const reload = async () => {
 				const app: any = this.plugin.app; // Otherwise typescript complains
-				await app.plugins.disablePlugin("obsidian-ai-autocomplete");
-				await app.plugins.enablePlugin("obsidian-ai-autocomplete");
+				await app.plugins.disablePlugin("companion");
+				await app.plugins.enablePlugin("companion");
 			};
 			reload();
 		}
