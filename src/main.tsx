@@ -60,7 +60,7 @@ export default class Companion extends Plugin {
 		this.enabled = this.settings.enable_by_default;
 
 		this.addCommand({
-			id: "ai-complete-load-preset",
+			id: "load-preset",
 			name: "Load preset",
 			callback: () => {
 				new PresetChooserModal(this).open();
@@ -70,7 +70,7 @@ export default class Companion extends Plugin {
 		for (const preset of this.settings.presets) {
 			if (!preset.enable_editor_command) continue;
 			this.addCommand({
-				id: `ai-complete-load-preset-${preset.name}`,
+				id: `load-preset-${preset.name}`,
 				name: `Load preset: ${preset.name}`,
 				callback: () => {
 					this.loadPreset(preset.name);
@@ -92,7 +92,7 @@ export default class Companion extends Plugin {
 			}
 		);
 		this.addCommand({
-			id: "ai-complete-toggle",
+			id: "toggle",
 			name: "Toggle completion",
 			callback: () => {
 				this.enabled = !this.enabled;
@@ -128,7 +128,7 @@ export default class Companion extends Plugin {
 		this.addSettingTab(new CompanionSettingsTab(this.app, this));
 	}
 
-	onunload() {}
+	onunload() { }
 
 	fillStatusbar() {
 		if (!this.statusBarItemEl) return;
@@ -167,7 +167,7 @@ export default class Companion extends Plugin {
 				].settings;
 			preset.model_settings =
 				this.settings.provider_settings[this.settings.provider].models[
-					this.settings.model
+				this.settings.model
 				];
 		} else {
 			this.settings.presets.push({
