@@ -19,6 +19,7 @@ To use Companion with OpenAI's ChatGPT models, you'll need to generate an API ke
 6. Paste your OpenAI API key into the "API Key" field.
 7. Close the Companion settings.
 8. To activate the autocomplete feature, open the command palette by pressing `Ctrl/Cmd + P` and search for "Toggle Completion". Select the command and hit Enter.
+9. Once a suggestion appears, use the `Tab` key to accept the next word.
 
 Once you've completed these steps, the Companion plugin will be ready to suggest completions based on the context of your writing. You can accept or ignore these suggestions as you see fit, and continue writing notes more efficiently and effectively with the power of AI.
 
