@@ -2,7 +2,7 @@ import * as React from "react";
 import { Completer, Model } from "../complete/complete";
 import { available } from "../complete/completers";
 import { useState, useEffect } from "react";
-import Companion from "../main";
+import Companion, { AcceptSettings } from "../main";
 
 function Presets({
 	plugin,
@@ -254,6 +254,112 @@ function ProviderModelChooser({
 	);
 }
 
+function AcceptSettingsComponent({
+	plugin,
+	reload_signal,
+}: {
+	plugin: Plugin;
+	reload_signal: { reload: boolean };
+}) {
+	const [accept_settings, _setAcceptSettings] = useState(
+		plugin.settings.accept
+	);
+	const [delay, _setDelay] = useState(plugin.settings.delay_ms);
+
+	const setAcceptSettings = (settings: string) => {
+		_setAcceptSettings(settings);
+		plugin.settings.accept = settings;
+		plugin.saveData(plugin.settings);
+	};
+	const setDelay = (delay: number) => {
+		_setDelay(delay);
+		plugin.settings.delay_ms = delay;
+		plugin.saveData(plugin.settings);
+		reload_signal.reload = true;
+	};
+
+	return (
+		<>
+			<div className="ai-complete-setting">
+				<span>Delay:</span>
+				<input
+					type="number"
+					value={delay}
+					onChange={(e) => {
+						setDelay(parseInt(e.target.value));
+					}}
+				/>
+				<span>ms</span>
+			</div>
+			<div className="ai-complete-setting">
+				<span>Splitter regex:</span>
+				<input
+					type="text"
+					value={accept_settings.splitter_regex}
+					onChange={(e) => {
+						setAcceptSettings({
+							...accept_settings,
+							splitter_regex: e.target.value,
+						});
+					}}
+				/>
+			</div>
+			<div className="ai-complete-setting">
+				<span>Preview splitter regex:</span>
+				<input
+					type="text"
+					value={accept_settings.display_splitter_regex}
+					onChange={(e) => {
+						setAcceptSettings({
+							...accept_settings,
+							display_splitter_regex: e.target.value,
+						});
+					}}
+				/>
+			</div>
+			<div className="ai-complete-setting">
+				<span>Completion completeness regex:</span>
+				<input
+					type="text"
+					value={accept_settings.completion_completeness_regex}
+					onChange={(e) => {
+						setAcceptSettings({
+							...accept_settings,
+							completion_completeness_regex: e.target.value,
+						});
+					}}
+				/>
+			</div>
+			<div className="ai-complete-setting">
+				<span>Minimum accepted completion length:</span>
+				<input
+					type="number"
+					value={accept_settings.min_accept_length}
+					onChange={(e) => {
+						setAcceptSettings({
+							...accept_settings,
+							min_accept_length: parseInt(e.target.value),
+						});
+					}}
+				/>
+			</div>
+			<div className="ai-complete-setting">
+				<span>Minimum displayed completion length:</span>
+				<input
+					type="number"
+					value={accept_settings.min_display_length}
+					onChange={(e) => {
+						setAcceptSettings({
+							...accept_settings,
+							min_display_length: parseInt(e.target.value),
+						});
+					}}
+				/>
+			</div>
+		</>
+	);
+}
+
 export default function SettingsComponent({
 	plugin,
 	reload_signal,
@@ -284,6 +390,10 @@ export default function SettingsComponent({
 					/>
 					Enable by default
 				</span>
+				<AcceptSettingsComponent
+					plugin={plugin}
+					reload_signal={reload_signal}
+				/>
 			</div>
 			<ProviderModelChooser
 				plugin={plugin}

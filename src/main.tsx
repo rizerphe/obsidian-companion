@@ -25,10 +25,20 @@ interface CompanionModelSettings {
 	enable_editor_command: boolean;
 }
 
+export interface AcceptSettings {
+	splitter_regex: string;
+	display_splitter_regex: string;
+	completion_completeness_regex: string;
+	min_accept_length: number;
+	min_display_length: number;
+}
+
 interface CompanionSettings {
 	provider: string;
 	model: string;
 	enable_by_default: boolean;
+	delay_ms: number;
+	accept: AcceptSettings;
 	provider_settings: {
 		[provider: string]: {
 			settings: string;
@@ -44,6 +54,14 @@ const DEFAULT_SETTINGS: CompanionSettings = {
 	provider: "openai-chatgpt",
 	model: "gpt3.5-turbo",
 	enable_by_default: false,
+	delay_ms: 2000,
+	accept: {
+		splitter_regex: " ",
+		display_splitter_regex: "\\.",
+		completion_completeness_regex: ".*(?!p{L})[^d]$",
+		min_accept_length: 4,
+		min_display_length: 50,
+	},
 	provider_settings: {},
 	presets: [],
 };
@@ -108,7 +126,7 @@ export default class Companion extends Plugin {
 		this.registerEditorExtension(
 			inlineSuggestion({
 				fetchFn: () => this.triggerCompletion(),
-				delay: 2000,
+				delay: this.settings.delay_ms,
 				continue_suggesting: true,
 			})
 		);
@@ -128,7 +146,7 @@ export default class Companion extends Plugin {
 		this.addSettingTab(new CompanionSettingsTab(this.app, this));
 	}
 
-	onunload() { }
+	onunload() {}
 
 	fillStatusbar() {
 		if (!this.statusBarItemEl) return;
@@ -167,7 +185,7 @@ export default class Companion extends Plugin {
 				].settings;
 			preset.model_settings =
 				this.settings.provider_settings[this.settings.provider].models[
-				this.settings.model
+					this.settings.model
 				];
 		} else {
 			this.settings.presets.push({
@@ -250,7 +268,8 @@ export default class Companion extends Plugin {
 			this.settings.model = model.id;
 			this.active_model = new CompletionCacher(
 				model,
-				provider_settings ? provider_settings.models[model.id] : ""
+				provider_settings ? provider_settings.models[model.id] : "",
+				this.settings.accept
 			);
 		}
 
