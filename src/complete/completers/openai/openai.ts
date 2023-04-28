@@ -43,8 +43,8 @@ export default class OpenAIModel implements Model {
 
 export class OpenAIComplete implements Completer {
     id: string = "openai";
-    name: string = "OpenAI";
-    description: string = "OpenAI's API";
+    name: string = "OpenAI GPT3";
+    description: string = "OpenAI's GPT3 API";
 
     async get_models(settings: string) {
         return available_models.map((model) => new OpenAIModel(model.id, model.name, model.description, settings));

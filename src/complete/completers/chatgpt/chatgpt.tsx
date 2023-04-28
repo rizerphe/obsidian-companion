@@ -16,7 +16,7 @@ export default class ChatGPT implements Model {
 
     constructor(provider_settings: string) {
         this.id = "gpt-3.5-turbo";
-        this.name = "ChatGPT";
+        this.name = "GPT 3.5 Turbo";
         this.description = "OpenAI's ChatGPT model";
         this.provider_settings = parse_provider_settings(provider_settings);
     }

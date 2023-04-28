@@ -41,7 +41,7 @@ interface CompanionSettings {
 }
 
 const DEFAULT_SETTINGS: CompanionSettings = {
-	provider: "openai",
+	provider: "openai-chatgpt",
 	model: "gpt3.5-turbo",
 	enable_by_default: false,
 	provider_settings: {},

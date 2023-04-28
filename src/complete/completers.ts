@@ -3,6 +3,6 @@ import { OpenAIComplete } from "./completers/openai/openai";
 import { ChatGPTComplete } from "./completers/chatgpt/chatgpt";
 
 export const available: Completer[] = [
-    new OpenAIComplete(),
     new ChatGPTComplete(),
+    new OpenAIComplete(),
 ];
