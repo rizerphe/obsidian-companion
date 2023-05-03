@@ -159,6 +159,7 @@ function ProviderModelChooser({
 				...plugin.settings.provider_settings[provider.id]?.models,
 			},
 		};
+		plugin.active_model = null;
 		plugin.saveData(plugin.settings);
 	};
 
@@ -179,6 +180,7 @@ function ProviderModelChooser({
 				[model.id]: settings,
 			},
 		};
+		plugin.active_model = null;
 		plugin.saveData(plugin.settings);
 	};
 
