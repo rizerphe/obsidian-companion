@@ -1,7 +1,7 @@
 {
 	"id": "companion",
 	"name": "Companion",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"minAppVersion": "1.1.16",
 	"description": "A github copilot-like interface for obsidian that can use ChatGPT under the hood.",
 	"author": "rizerphe",
