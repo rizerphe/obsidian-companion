@@ -5,8 +5,8 @@ export default function SettingsItem({
 	description,
 	children,
 }: {
-	name?: string;
-	description?: string;
+	name?: React.ReactNode;
+	description?: React.ReactNode;
 	children?: React.ReactNode;
 }) {
 	return (
