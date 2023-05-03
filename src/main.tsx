@@ -5,6 +5,7 @@ import {
 	Notice,
 	Plugin,
 	PluginSettingTab,
+	Editor,
 } from "obsidian";
 import { createRoot } from "react-dom/client";
 import React from "react";
@@ -36,7 +37,7 @@ interface CompanionSettings {
 	provider: string;
 	model: string;
 	enable_by_default: boolean;
-	keybind?: string;
+	keybind: string | null;
 	delay_ms: number;
 	accept: AcceptSettings;
 	provider_settings: {
@@ -130,7 +131,7 @@ export default class Companion extends Plugin {
 				fetchFn: () => this.triggerCompletion(),
 				delay: this.settings.delay_ms,
 				continue_suggesting: true,
-				accept_shortcut: this.settings.keybind,
+				accept_shortcut: this.settings.keybind || "Tab",
 			})
 		);
 	}
@@ -140,11 +141,21 @@ export default class Companion extends Plugin {
 		this.fillStatusbar();
 	}
 
+	async setupAcceptSuggestionCommand() {
+		this.addCommand({
+			id: "accept",
+			name: "Accept completion",
+			editorCallback: (editor: Editor) =>
+				this.acceptCompletion(this, editor),
+		});
+	}
+
 	async onload() {
 		await this.setupModelChoice();
 		await this.setupToggle();
 		await this.setupSuggestions();
 		await this.setupStatusbar();
+		await this.setupAcceptSuggestionCommand();
 
 		this.addSettingTab(new CompanionSettingsTab(this.app, this));
 	}
@@ -245,6 +256,23 @@ export default class Companion extends Plugin {
 		return completion;
 	}
 
+	async acceptCompletion(plugin: Companion, editor: Editor) {
+		const suggestion = plugin.active_model?.last_suggestion;
+		if (suggestion) {
+			editor.replaceRange(suggestion, editor.getCursor());
+			editor.setCursor({
+				ch:
+					suggestion.split("\n").length > 1
+						? suggestion.split("\n")[
+								suggestion.split("\n").length - 1
+						  ].length
+						: editor.getCursor().ch + suggestion.length,
+				line:
+					editor.getCursor().line + suggestion.split("\n").length - 1,
+			});
+		}
+	}
+
 	async complete(prefix: string, suffix: string) {
 		if (this.active_provider != this.settings.provider) {
 			this.active_provider = this.settings.provider;
@@ -272,7 +300,8 @@ export default class Companion extends Plugin {
 			this.active_model = new CompletionCacher(
 				model,
 				provider_settings ? provider_settings.models[model.id] : "",
-				this.settings.accept
+				this.settings.accept,
+				this.settings.keybind == null
 			);
 		}
 

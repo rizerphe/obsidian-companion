@@ -18,17 +18,21 @@ export class CompletionCacher {
 	model: Model;
 	model_settings: string;
 	accept_settings: AcceptSettings;
+	accept_with_obsidian: boolean;
+	last_suggestion: string = "";
 	current_fetch: Promise<undefined> | null = null;
 
 	constructor(
 		model: Model,
 		model_settings: string,
-		accept_settings: AcceptSettings
+		accept_settings: AcceptSettings,
+		accept_with_obsidian: boolean
 	) {
 		this.cache = new Map();
 		this.model = model;
 		this.model_settings = model_settings;
 		this.accept_settings = accept_settings;
+		this.accept_with_obsidian = accept_with_obsidian;
 	}
 
 	get_cached(prompt: Prompt): Suggestion | null {
@@ -157,6 +161,19 @@ export class CompletionCacher {
 		this.cache.set(prompt, completion);
 	}
 
+	strip(suggestion: Suggestion): Suggestion {
+		// We strip the suggestion of the actual completion if
+		// obsidian should accept the completion
+		this.last_suggestion = suggestion.complete_suggestion;
+		if (this.accept_with_obsidian) {
+			return {
+				display_suggestion: suggestion.display_suggestion,
+				complete_suggestion: "",
+			};
+		}
+		return suggestion;
+	}
+
 	async complete(prompt: Prompt): Promise<Suggestion> {
 		// This is a three step process:
 		// 1. Check if we have a cached result
@@ -165,14 +182,14 @@ export class CompletionCacher {
 		// This solution might be a bit slow because we aren't checking what the current fetch is for.
 		let cached = this.get_cached(prompt);
 		if (cached) {
-			return cached;
+			return this.strip(cached);
 		}
 		if (this.current_fetch) {
 			await this.current_fetch;
 		}
 		cached = this.get_cached(prompt);
 		if (cached) {
-			return cached;
+			return this.strip(cached);
 		}
 		this.current_fetch = this.fetch(prompt);
 		await this.current_fetch;
@@ -180,11 +197,11 @@ export class CompletionCacher {
 
 		cached = this.get_cached(prompt);
 		if (cached) {
-			return cached;
+			return this.strip(cached);
 		}
-		return {
+		return this.strip({
 			display_suggestion: "",
 			complete_suggestion: "",
-		};
+		});
 	}
 }
