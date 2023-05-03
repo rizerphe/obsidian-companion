@@ -265,6 +265,7 @@ function AcceptSettingsComponent({
 		plugin.settings.accept
 	);
 	const [delay, _setDelay] = useState(plugin.settings.delay_ms);
+	const [keybind, _setKeybind] = useState(plugin.settings.keybind);
 	const [expanded, setExpanded] = useState(false);
 
 	const setAcceptSettings = (settings: AcceptSettings) => {
@@ -278,6 +279,12 @@ function AcceptSettingsComponent({
 	const setDelay = (delay: number) => {
 		_setDelay(delay);
 		plugin.settings.delay_ms = delay;
+		plugin.saveData(plugin.settings);
+		reload_signal.reload = true;
+	};
+	const setKeybind = (keybind: string | null) => {
+		_setKeybind(keybind);
+		plugin.settings.keybind = keybind;
 		plugin.saveData(plugin.settings);
 		reload_signal.reload = true;
 	};
@@ -297,6 +304,30 @@ function AcceptSettingsComponent({
 					<span>ms</span>
 				</span>
 			</div>
+			<div className="ai-complete-setting flex-start">
+				<div
+					className={
+						"checkbox-container mod-small" +
+						(keybind !== null ? " is-enabled" : "")
+					}
+					onClick={(_e) => {
+						setKeybind(keybind === null ? "Tab" : null);
+					}}
+				/>
+				<span>Use a CodeMirror Keybind</span>
+			</div>
+			{keybind === null ? null : (
+				<div className="ai-complete-setting">
+					<span>CodeMiror Keybind:</span>
+					<input
+						type="text"
+						value={keybind || ""}
+						onChange={(e) => {
+							setKeybind(e.target.value);
+						}}
+					/>
+				</div>
+			)}
 			<div className="ai-complete-tabs">
 				<button
 					onClick={() =>
