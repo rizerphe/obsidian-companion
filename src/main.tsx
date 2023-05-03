@@ -246,6 +246,12 @@ export default class Companion extends Plugin {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!view) return "";
 		if (!this.enabled) return "";
+		if ((view.editor as any)?.cm?.cm?.state?.keyMap === "vim") {
+			// Don't complete if vim mode is enabled
+			// (hehe I know more about the types than typescript does)
+			// (thus I can use "as any" wooooo)
+			return "";
+		}
 
 		const cursor = view.editor.getCursor();
 		const currentLine = view.editor.getLine(cursor.line);
