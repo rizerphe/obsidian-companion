@@ -9,7 +9,7 @@ import {
 } from "obsidian";
 import { createRoot } from "react-dom/client";
 import React from "react";
-import { inlineSuggestion } from "codemirror-companion-extension";
+import { forceableInlineSuggestion } from "codemirror-companion-extension";
 import SettingsComponent from "./settings/settings";
 import { CompletionCacher } from "./cache";
 import { available } from "./complete/completers";
@@ -73,6 +73,7 @@ export default class Companion extends Plugin {
 	settings: CompanionSettings;
 	enabled: boolean = false;
 	active_provider: string = "";
+	force_fetch: () => void = () => {};
 	active_model: CompletionCacher | null = null;
 	statusBarItemEl: HTMLElement | null = null;
 
@@ -126,14 +127,14 @@ export default class Companion extends Plugin {
 	}
 
 	async setupSuggestions() {
-		this.registerEditorExtension(
-			inlineSuggestion({
-				fetchFn: () => this.triggerCompletion(),
-				delay: this.settings.delay_ms,
-				continue_suggesting: true,
-				accept_shortcut: this.settings.keybind || "Tab",
-			})
-		);
+		const { extension, force_fetch } = forceableInlineSuggestion({
+			fetchFn: () => this.triggerCompletion(),
+			delay: this.settings.delay_ms,
+			continue_suggesting: true,
+			accept_shortcut: this.settings.keybind || "Tab",
+		});
+		this.force_fetch = force_fetch;
+		this.registerEditorExtension(extension);
 	}
 
 	async setupStatusbar() {
@@ -141,12 +142,16 @@ export default class Companion extends Plugin {
 		this.fillStatusbar();
 	}
 
-	async setupAcceptSuggestionCommand() {
+	async setupSuggestionCommands() {
 		this.addCommand({
 			id: "accept",
 			name: "Accept completion",
-			editorCallback: (editor: Editor) =>
-				this.acceptCompletion(this, editor),
+			editorCallback: (editor: Editor) => this.acceptCompletion(editor),
+		});
+		this.addCommand({
+			id: "suggest",
+			name: "Generate completion",
+			editorCallback: () => this.force_fetch(),
 		});
 	}
 
@@ -155,7 +160,7 @@ export default class Companion extends Plugin {
 		await this.setupToggle();
 		await this.setupSuggestions();
 		await this.setupStatusbar();
-		await this.setupAcceptSuggestionCommand();
+		await this.setupSuggestionCommands();
 
 		this.addSettingTab(new CompanionSettingsTab(this.app, this));
 	}
@@ -256,8 +261,8 @@ export default class Companion extends Plugin {
 		return completion;
 	}
 
-	async acceptCompletion(plugin: Companion, editor: Editor) {
-		const suggestion = plugin.active_model?.last_suggestion;
+	async acceptCompletion(editor: Editor) {
+		const suggestion = this.active_model?.last_suggestion;
 		if (suggestion) {
 			editor.replaceRange(suggestion, editor.getCursor());
 			editor.setCursor({
@@ -270,6 +275,7 @@ export default class Companion extends Plugin {
 				line:
 					editor.getCursor().line + suggestion.split("\n").length - 1,
 			});
+			this.force_fetch();
 		}
 	}
 

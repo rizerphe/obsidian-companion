@@ -413,10 +413,10 @@ builtin-modules@3.3.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
-codemirror-companion-extension@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/codemirror-companion-extension/-/codemirror-companion-extension-0.0.3.tgz#3a86f622d9f096166edc2385e84e9c2a4985eb11"
-  integrity sha512-3xHzam9JgTGDosQMN76JX6W1ypz6IgwvqkHr44ggz4DOsN7SN3kDiyKQb7uU9A0sVUExXqR4vhiRoOs/v1tRSA==
+codemirror-companion-extension@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/codemirror-companion-extension/-/codemirror-companion-extension-0.0.4.tgz#8aeaf0e37f1c2e77edef8ddcf017efcdf1b83889"
+  integrity sha512-e9pVsj89gwCc2uaHuFRVQnVq1kojXB5qz786O4IZTdxbr9tXof5iVhMo9SvFJW1/nD+nq8ATcgVJEb88pzBUMA==
   dependencies:
     codemirror "^6.0.1"
 
