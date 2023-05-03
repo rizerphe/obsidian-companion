@@ -131,7 +131,7 @@ export default class Companion extends Plugin {
 			fetchFn: () => this.triggerCompletion(),
 			delay: this.settings.delay_ms,
 			continue_suggesting: true,
-			accept_shortcut: this.settings.keybind || "Tab",
+			accept_shortcut: this.settings.keybind,
 		});
 		this.force_fetch = force_fetch;
 		this.registerEditorExtension(extension);
