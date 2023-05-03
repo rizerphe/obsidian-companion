@@ -3,6 +3,7 @@ import { Completer, Model } from "../complete/complete";
 import { available } from "../complete/completers";
 import { useState, useEffect } from "react";
 import Companion, { AcceptSettings } from "../main";
+import SettingsItem from "../components/SettingsItem";
 
 function Presets({
 	plugin,
@@ -25,64 +26,55 @@ function Presets({
 	};
 
 	return (
-		<div className="presets">
-			<span className="ai-complete-heading">
-				<span className="section-name">Presets</span>
-			</span>
-			<p className="description">
-				Presets give you a way to quickly switch between different
-				settings. You can create a preset by clicking the "Save preset"
-				button. You can then switch between presets by clicking the
-				"Load" button on the corresponding preset, or by using the "Load
-				preset" command in the command palette.
-			</p>
-			<div className="presets-list">
+		<>
+			<SettingsItem
+				name="Presets"
+				description="
+				Quickly switch between different settings."
+			></SettingsItem>
+			<>
 				{plugin.settings.presets.map((preset) => (
-					<div className="preset" key={preset.name}>
-						<span className="name">{preset.name}</span>
-						<span className="enable-editor-command">
-							<div
-								className={
-									"checkbox-container mod-small" +
-									(preset.enable_editor_command
-										? " is-enabled"
-										: "")
-								}
-								onClick={(_e) => {
-									preset.enable_editor_command =
-										!preset.enable_editor_command;
-									plugin.saveSettings();
-									setForceUpdate(force_update + 1);
-									reload_signal.reload = true;
-								}}
-							></div>
-							Command
-						</span>
-						<span className="load">
-							<button
-								onClick={() => {
-									plugin.loadPreset(preset.name);
-									setProvider(preset.provider);
-									setModel(preset.model);
-								}}
-							>
-								Load
-							</button>
-						</span>
-						<span className="delete">
-							<button
-								onClick={() => {
-									plugin.deletePreset(preset.name);
-									setForceUpdate(force_update + 1);
-								}}
-							>
-								Delete
-							</button>
-						</span>
-					</div>
+					<SettingsItem key={preset.name} name={preset.name}>
+						<div
+							className={
+								"checkbox-container" +
+								(preset.enable_editor_command
+									? " is-enabled"
+									: "")
+							}
+							onClick={(_e) => {
+								preset.enable_editor_command =
+									!preset.enable_editor_command;
+								plugin.saveSettings();
+								setForceUpdate(force_update + 1);
+								reload_signal.reload = true;
+							}}
+						></div>
+						Command
+						<button
+							onClick={() => {
+								plugin.loadPreset(preset.name);
+								setProvider(preset.provider);
+								setModel(preset.model);
+							}}
+						>
+							Load
+						</button>
+						<button
+							onClick={() => {
+								plugin.deletePreset(preset.name);
+								setForceUpdate(force_update + 1);
+							}}
+						>
+							Delete
+						</button>
+					</SettingsItem>
 				))}
-			</div>
-			<span className="save-preset">
+			</>
+			<SettingsItem
+				name="Save preset"
+				description="Save the current settings as a preset"
+			>
 				<input
 					type="text"
 					placeholder="Preset name"
@@ -90,8 +82,8 @@ function Presets({
 					onChange={(e) => setName(e.target.value)}
 				/>
 				<button onClick={savePreset}>Save preset</button>
-			</span>
-		</div>
+			</SettingsItem>
+		</>
 	);
 }
 
@@ -194,10 +186,12 @@ function ProviderModelChooser({
 	const ModelSettings = model?.Settings;
 
 	return (
-		<div className="autocomplete-settings">
-			<div className="provider-settings">
-				<span className="ai-complete-heading">
-					<span className="section-name">Provider</span>
+		<>
+			<>
+				<SettingsItem
+					name="Provider"
+					description={provider ? provider.description : ""}
+				>
 					<select
 						className="dropdown"
 						value={provider ? provider.id : ""}
@@ -209,20 +203,19 @@ function ProviderModelChooser({
 							<option value={provider.id}>{provider.name}</option>
 						))}
 					</select>
-				</span>
-				<p className="description">
-					{provider ? provider.description : ""}
-				</p>
+				</SettingsItem>
 				{ProviderSettings && (
 					<ProviderSettings
 						settings={providerSettings}
 						saveSettings={setProviderSettings}
 					/>
 				)}
-			</div>
-			<div className="model-settings">
-				<span className="ai-complete-heading">
-					<span className="section-name">Model</span>
+			</>
+			<>
+				<SettingsItem
+					name="Model"
+					description={model ? model.description : ""}
+				>
 					<select
 						className="dropdown"
 						value={model ? model.id : ""}
@@ -235,22 +228,21 @@ function ProviderModelChooser({
 								<option value={model.id}>{model.name}</option>
 							))}
 					</select>
-				</span>
-				<p className="description">{model ? model.description : ""}</p>
+				</SettingsItem>
 				{ModelSettings && (
 					<ModelSettings
 						settings={modelSettings}
 						saveSettings={setModelSettings}
 					/>
 				)}
-			</div>
+			</>
 			<Presets
 				plugin={plugin}
 				setModel={setModel}
 				setProvider={setProvider}
 				reload_signal={reload_signal}
 			/>
-		</div>
+		</>
 	);
 }
 
@@ -291,34 +283,29 @@ function AcceptSettingsComponent({
 
 	return (
 		<>
-			<div className="ai-complete-setting">
-				<span>Delay:</span>
-				<span>
-					<input
-						type="number"
-						value={delay}
-						onChange={(e) => {
-							setDelay(parseInt(e.target.value));
-						}}
-					/>
-					<span>ms</span>
-				</span>
-			</div>
-			<div className="ai-complete-setting flex-start">
+			<SettingsItem name="Delay">
+				<input
+					type="number"
+					value={delay}
+					onChange={(e) => {
+						setDelay(parseInt(e.target.value));
+					}}
+				/>
+				<span>ms</span>
+			</SettingsItem>
+			<SettingsItem name="Use a CodeMiror Keybind">
 				<div
 					className={
-						"checkbox-container mod-small" +
+						"checkbox-container" +
 						(keybind !== null ? " is-enabled" : "")
 					}
 					onClick={(_e) => {
 						setKeybind(keybind === null ? "Tab" : null);
 					}}
 				/>
-				<span>Use a CodeMirror Keybind</span>
-			</div>
+			</SettingsItem>
 			{keybind === null ? null : (
-				<div className="ai-complete-setting">
-					<span>CodeMiror Keybind:</span>
+				<SettingsItem name="CodeMiror Keybind">
 					<input
 						type="text"
 						value={keybind || ""}
@@ -326,9 +313,9 @@ function AcceptSettingsComponent({
 							setKeybind(e.target.value);
 						}}
 					/>
-				</div>
+				</SettingsItem>
 			)}
-			<div className="ai-complete-tabs">
+			<SettingsItem name="Accept">
 				<button
 					onClick={() =>
 						setAcceptSettings({
@@ -385,14 +372,13 @@ function AcceptSettingsComponent({
 				>
 					Whole completion
 				</button>
-			</div>
+			</SettingsItem>
 			<span onClick={() => setExpanded(!expanded)}>
 				{expanded ? "▾" : "▸"} Advanced
 			</span>
 			{expanded && (
-				<div className="ai-complete-advanced">
-					<div className="ai-complete-setting">
-						<span>Splitter regex:</span>
+				<>
+					<SettingsItem name="Splitter regex">
 						<input
 							type="text"
 							value={accept_settings.splitter_regex}
@@ -403,9 +389,8 @@ function AcceptSettingsComponent({
 								});
 							}}
 						/>
-					</div>
-					<div className="ai-complete-setting">
-						<span>Preview splitter regex:</span>
+					</SettingsItem>
+					<SettingsItem name="Preview splitter regex">
 						<input
 							type="text"
 							value={accept_settings.display_splitter_regex}
@@ -416,9 +401,8 @@ function AcceptSettingsComponent({
 								});
 							}}
 						/>
-					</div>
-					<div className="ai-complete-setting">
-						<span>Completion completeness regex:</span>
+					</SettingsItem>
+					<SettingsItem name="Completion completeness regex">
 						<input
 							type="text"
 							value={
@@ -432,9 +416,8 @@ function AcceptSettingsComponent({
 								});
 							}}
 						/>
-					</div>
-					<div className="ai-complete-setting">
-						<span>Minimum accepted completion length:</span>
+					</SettingsItem>
+					<SettingsItem name="Minimum completion length">
 						<input
 							type="number"
 							value={accept_settings.min_accept_length}
@@ -445,9 +428,8 @@ function AcceptSettingsComponent({
 								});
 							}}
 						/>
-					</div>
-					<div className="ai-complete-setting">
-						<span>Minimum displayed completion length:</span>
+					</SettingsItem>
+					<SettingsItem name="Minimum completion length">
 						<input
 							type="number"
 							value={accept_settings.min_display_length}
@@ -460,8 +442,8 @@ function AcceptSettingsComponent({
 								});
 							}}
 						/>
-					</div>
-				</div>
+					</SettingsItem>
+				</>
 			)}
 		</>
 	);
@@ -479,13 +461,12 @@ export default function SettingsComponent({
 	);
 
 	return (
-		<div>
-			<div className="ai-complete-settings-header">
-				<h1>Companion</h1>
-				<span className="ai-complete-enable-by-default">
+		<>
+			<>
+				<SettingsItem name="Enable by default">
 					<div
 						className={
-							"checkbox-container mod-small" +
+							"checkbox-container" +
 							(enable_by_default ? " is-enabled" : "")
 						}
 						onClick={(_e) => {
@@ -495,17 +476,16 @@ export default function SettingsComponent({
 							plugin.saveData(plugin.settings);
 						}}
 					/>
-					Enable by default
-				</span>
+				</SettingsItem>
 				<AcceptSettingsComponent
 					plugin={plugin}
 					reload_signal={reload_signal}
 				/>
-			</div>
+			</>
 			<ProviderModelChooser
 				plugin={plugin}
 				reload_signal={reload_signal}
 			/>
-		</div>
+		</>
 	);
 }

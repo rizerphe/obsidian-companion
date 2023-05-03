@@ -1,4 +1,5 @@
 import * as React from "react";
+import SettingsItem from "../../../components/SettingsItem";
 
 export interface Settings {
 	api_key: string;
@@ -27,8 +28,7 @@ export function SettingsUI({
 	saveSettings: (settings: string) => void;
 }) {
 	return (
-		<div className="opeanai-provider-settings">
-			<span>API key:</span>
+		<SettingsItem name="API key">
 			<input
 				type="text"
 				value={parse_settings(settings).api_key}
@@ -36,6 +36,6 @@ export function SettingsUI({
 					saveSettings(JSON.stringify({ api_key: e.target.value }))
 				}
 			/>
-		</div>
+		</SettingsItem>
 	);
 }

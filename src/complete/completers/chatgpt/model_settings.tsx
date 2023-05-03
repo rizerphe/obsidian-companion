@@ -1,4 +1,5 @@
 import * as React from "react";
+import SettingsItem from "../../../components/SettingsItem";
 import { z } from "zod";
 
 export const settings_schema = z.object({
@@ -38,9 +39,10 @@ export function SettingsUI({
 	saveSettings: (settings: string) => void;
 }) {
 	return (
-		<div className="chatgpt-settings">
-			<span className="category-name">System prompt:</span>
+		<>
+			<SettingsItem name="System prompt" />
 			<textarea
+				className="ai-complete-chatgpt-full-width"
 				value={parse_settings(settings).system_prompt}
 				onChange={(e) =>
 					saveSettings(
@@ -51,8 +53,9 @@ export function SettingsUI({
 					)
 				}
 			/>
-			<span className="category-name">User prompt:</span>
+			<SettingsItem name="User prompt" />
 			<textarea
+				className="ai-complete-chatgpt-full-width"
 				value={parse_settings(settings).user_prompt}
 				onChange={(e) =>
 					saveSettings(
@@ -63,73 +66,62 @@ export function SettingsUI({
 					)
 				}
 			/>
-			<span className="category-name">Generation settings:</span>
-			<div className="generation-settings">
-				<div className="generation-setting">
-					<span>Temperature:</span>
-					<input
-						type="number"
-						value={parse_settings(settings).temperature}
-						onChange={(e) =>
-							saveSettings(
-								JSON.stringify({
-									...parse_settings(settings),
-									temperature: parseFloat(e.target.value),
-								})
-							)
-						}
-					/>
-				</div>
-				<div className="generation-setting">
-					<span>Top p:</span>
-					<input
-						type="number"
-						value={parse_settings(settings).top_p}
-						onChange={(e) =>
-							saveSettings(
-								JSON.stringify({
-									...parse_settings(settings),
-									top_p: parseFloat(e.target.value),
-								})
-							)
-						}
-					/>
-				</div>
-				<div className="generation-setting">
-					<span>Presence penalty:</span>
-					<input
-						type="number"
-						value={parse_settings(settings).presence_penalty}
-						onChange={(e) =>
-							saveSettings(
-								JSON.stringify({
-									...parse_settings(settings),
-									presence_penalty: parseFloat(
-										e.target.value
-									),
-								})
-							)
-						}
-					/>
-				</div>
-				<div className="generation-setting">
-					<span>Frequency penalty:</span>
-					<input
-						type="number"
-						value={parse_settings(settings).frequency_penalty}
-						onChange={(e) =>
-							saveSettings(
-								JSON.stringify({
-									...parse_settings(settings),
-									frequency_penalty: parseFloat(
-										e.target.value
-									),
-								})
-							)
-						}
-					/>
-				</div>
-			</div>
-		</div>
+			<SettingsItem name="Temperature">
+				<input
+					type="number"
+					value={parse_settings(settings).temperature}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parse_settings(settings),
+								temperature: parseFloat(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
+			<SettingsItem name="Top P">
+				<input
+					type="number"
+					value={parse_settings(settings).top_p}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parse_settings(settings),
+								top_p: parseFloat(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
+			<SettingsItem name="Presence penalty">
+				<input
+					type="number"
+					value={parse_settings(settings).presence_penalty}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parse_settings(settings),
+								presence_penalty: parseFloat(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
+			<SettingsItem name="Frequency penalty">
+				<input
+					type="number"
+					value={parse_settings(settings).frequency_penalty}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parse_settings(settings),
+								frequency_penalty: parseFloat(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
+		</>
 	);
 }

@@ -362,7 +362,7 @@ class CompanionSettingsTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		this.reload_signal.reload = false;
-		this.root = createRoot(containerEl.createDiv());
+		this.root = createRoot(containerEl);
 		this.root.render(
 			<React.StrictMode>
 				<SettingsComponent
