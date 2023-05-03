@@ -1,0 +1,17 @@
+[
+	{
+		"id": "large",
+		"name": "J2-Large",
+		"description": "Designed for fast responses."
+	},
+	{
+		"id": "grande",
+		"name": "J2-Grande",
+		"description": "Offers enhanced text generation capabilities, making it well-suited to language tasks with a greater degree of complexity."
+	},
+	{
+		"id": "jumbo",
+		"name": "J2-Jumbo",
+		"description": "As the largest and most powerful model in the Jurassic series, J2-Jumbo is an ideal choice for the most complex language processing tasks and generative text applications."
+	}
+]

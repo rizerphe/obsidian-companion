@@ -1,6 +1,6 @@
 # Obsidian Companion
 
-Companion is an Obsidian plugin that adds an **AI-powered autocomplete** feature to your note-taking and personal knowledge management platform. With Companion, you can write notes more quickly and easily by receiving suggestions for completing words, phrases, and even entire sentences based on the context of your writing. The autocomplete feature uses OpenAI's state-of-the-art **GPT-3 and GPT-3.5 models, including ChatGPT**, to generate smart suggestions that are tailored to your specific writing style and preferences. Support for more models is planned, too.
+Companion is an Obsidian plugin that adds an **AI-powered autocomplete** feature to your note-taking and personal knowledge management platform. With Companion, you can write notes more quickly and easily by receiving suggestions for completing words, phrases, and even entire sentences based on the context of your writing. The autocomplete feature uses OpenAI's state-of-the-art **GPT-3 and GPT-3.5 models, including ChatGPT**, among others, to generate smart suggestions that are tailored to your specific writing style and preferences. Support for more models is planned, too.
 
 Companion's autocomplete feature is designed to be unobtrusive, providing suggestions in ghost text that can be accepted or ignored by the you as you see fit, similar to what github copilot does. With Companion, you can write notes more efficiently and effectively, leveraging the power of AI to enhance your productivity and creativity. Whether you're a student, a researcher, or a knowledge worker, Companion can help you to take your note-taking and knowledge management to the next level.
 
@@ -49,6 +49,16 @@ To use the Presets feature, follow these steps:
 5. To use the preset, open the command palette by pressing `Ctrl/Cmd + P` and search for the name of your preset. Select the command and hit Enter.
 
 You can create multiple presets with different settings and enable them as global editor commands, making it easy to switch between different configurations as you work. With the Presets feature, you can customize your Companion experience to suit your needs and work more efficiently with AI-powered autocomplete suggestions.
+
+# Completion providers
+
+This plugin can use more than one source of completions, with more on the way. Currently it can:
+
+-   Ask **ChatGPT** to "Continue the following"
+-   Use the usual **GPT-3** models
+-   Use **AI21's Jurassic-2** models
+
+If there are any sources you'd like to suggest, feel free to open an issue.
 
 # Say Thank You
 
