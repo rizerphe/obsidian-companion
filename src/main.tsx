@@ -36,6 +36,7 @@ interface CompanionSettings {
 	provider: string;
 	model: string;
 	enable_by_default: boolean;
+	keybind?: string;
 	delay_ms: number;
 	accept: AcceptSettings;
 	provider_settings: {
@@ -53,6 +54,7 @@ const DEFAULT_SETTINGS: CompanionSettings = {
 	provider: "openai-chatgpt",
 	model: "gpt3.5-turbo",
 	enable_by_default: false,
+	keybind: "Tab",
 	delay_ms: 2000,
 	accept: {
 		splitter_regex: " ",
@@ -128,6 +130,7 @@ export default class Companion extends Plugin {
 				fetchFn: () => this.triggerCompletion(),
 				delay: this.settings.delay_ms,
 				continue_suggesting: true,
+				accept_shortcut: this.settings.keybind,
 			})
 		);
 	}
