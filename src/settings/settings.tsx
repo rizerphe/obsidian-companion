@@ -377,8 +377,12 @@ function AcceptSettingsComponent({
 				{expanded ? "▾" : "▸"} Advanced
 			</span>
 			{expanded && (
-				<>
-					<SettingsItem name="Splitter regex">
+				<div className="ai-complete-advanced-settings">
+					<SettingsItem
+						name="Splitter regex"
+						description="Defines how to split the completion chunks;
+						only one chunk is accepted at a time when the completion is triggered"
+					>
 						<input
 							type="text"
 							value={accept_settings.splitter_regex}
@@ -390,7 +394,11 @@ function AcceptSettingsComponent({
 							}}
 						/>
 					</SettingsItem>
-					<SettingsItem name="Preview splitter regex">
+					<SettingsItem
+						name="Preview splitter regex"
+						description="Defines how to split the preview chunks;
+						only one chunk is displayed at a time when the completion is triggered"
+					>
 						<input
 							type="text"
 							value={accept_settings.display_splitter_regex}
@@ -402,7 +410,11 @@ function AcceptSettingsComponent({
 							}}
 						/>
 					</SettingsItem>
-					<SettingsItem name="Completion completeness regex">
+					<SettingsItem
+						name="Completion completeness regex"
+						description="If this is not matched, the last chunk
+						(according to the preview splitter regex) is discarded"
+					>
 						<input
 							type="text"
 							value={
@@ -417,7 +429,11 @@ function AcceptSettingsComponent({
 							}}
 						/>
 					</SettingsItem>
-					<SettingsItem name="Minimum completion length">
+					<SettingsItem
+						name="Minimum completion length"
+						description="Will complete the fewest chunks
+						that add up to more than this many characters"
+					>
 						<input
 							type="number"
 							value={accept_settings.min_accept_length}
@@ -429,7 +445,11 @@ function AcceptSettingsComponent({
 							}}
 						/>
 					</SettingsItem>
-					<SettingsItem name="Minimum completion length">
+					<SettingsItem
+						name="Minimum display length"
+						description="Will display the fewest preview chunks
+						that add up to more than this many characters"
+					>
 						<input
 							type="number"
 							value={accept_settings.min_display_length}
@@ -443,7 +463,25 @@ function AcceptSettingsComponent({
 							}}
 						/>
 					</SettingsItem>
-				</>
+					<SettingsItem
+						name="Retrigger threshold"
+						description="When this many characters is left,
+						the API will be pinged again"
+					>
+						<input
+							type="number"
+							value={accept_settings.retrigger_threshold}
+							onChange={(e) => {
+								setAcceptSettings({
+									...accept_settings,
+									retrigger_threshold: parseInt(
+										e.target.value
+									),
+								});
+							}}
+						/>
+					</SettingsItem>
+				</div>
 			)}
 		</>
 	);
