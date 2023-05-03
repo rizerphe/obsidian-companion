@@ -48,7 +48,7 @@ function Presets({
 										? " is-enabled"
 										: "")
 								}
-								onClick={(e) => {
+								onClick={(_e) => {
 									preset.enable_editor_command =
 										!preset.enable_editor_command;
 									plugin.saveSettings();
@@ -457,7 +457,7 @@ export default function SettingsComponent({
 							"checkbox-container mod-small" +
 							(enable_by_default ? " is-enabled" : "")
 						}
-						onClick={(e) => {
+						onClick={(_e) => {
 							setEnableByDefault(!enable_by_default);
 							plugin.settings.enable_by_default =
 								!enable_by_default;

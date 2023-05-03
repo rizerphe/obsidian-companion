@@ -1,12 +1,10 @@
 import {
 	App,
-	Editor,
 	MarkdownView,
 	FuzzySuggestModal,
 	Notice,
 	Plugin,
 	PluginSettingTab,
-	Setting,
 } from "obsidian";
 import { createRoot } from "react-dom/client";
 import React from "react";
@@ -103,7 +101,7 @@ export default class Companion extends Plugin {
 		this.addRibbonIcon(
 			"terminal",
 			"Toggle completion",
-			(evt: MouseEvent) => {
+			(_evt: MouseEvent) => {
 				this.enabled = !this.enabled;
 				this.fillStatusbar();
 				new Notice(
@@ -305,7 +303,7 @@ class PresetChooserModal extends FuzzySuggestModal<CompanionModelSettings> {
 
 	onChooseItem(
 		preset: CompanionModelSettings,
-		evt: MouseEvent | KeyboardEvent
+		_evt: MouseEvent | KeyboardEvent
 	) {
 		this.plugin.loadPreset(preset.name);
 		new Notice("Loaded preset " + preset.name);
