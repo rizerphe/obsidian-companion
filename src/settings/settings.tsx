@@ -258,17 +258,21 @@ function AcceptSettingsComponent({
 	plugin,
 	reload_signal,
 }: {
-	plugin: Plugin;
+	plugin: Companion;
 	reload_signal: { reload: boolean };
 }) {
 	const [accept_settings, _setAcceptSettings] = useState(
 		plugin.settings.accept
 	);
 	const [delay, _setDelay] = useState(plugin.settings.delay_ms);
+	const [expanded, setExpanded] = useState(false);
 
-	const setAcceptSettings = (settings: string) => {
+	const setAcceptSettings = (settings: AcceptSettings) => {
 		_setAcceptSettings(settings);
 		plugin.settings.accept = settings;
+		if (plugin.active_model) {
+			plugin.active_model.accept_settings = settings;
+		}
 		plugin.saveData(plugin.settings);
 	};
 	const setDelay = (delay: number) => {
@@ -282,80 +286,152 @@ function AcceptSettingsComponent({
 		<>
 			<div className="ai-complete-setting">
 				<span>Delay:</span>
-				<input
-					type="number"
-					value={delay}
-					onChange={(e) => {
-						setDelay(parseInt(e.target.value));
-					}}
-				/>
-				<span>ms</span>
+				<span>
+					<input
+						type="number"
+						value={delay}
+						onChange={(e) => {
+							setDelay(parseInt(e.target.value));
+						}}
+					/>
+					<span>ms</span>
+				</span>
 			</div>
-			<div className="ai-complete-setting">
-				<span>Splitter regex:</span>
-				<input
-					type="text"
-					value={accept_settings.splitter_regex}
-					onChange={(e) => {
+			<div className="ai-complete-tabs">
+				<button
+					onClick={() =>
 						setAcceptSettings({
-							...accept_settings,
-							splitter_regex: e.target.value,
-						});
-					}}
-				/>
-			</div>
-			<div className="ai-complete-setting">
-				<span>Preview splitter regex:</span>
-				<input
-					type="text"
-					value={accept_settings.display_splitter_regex}
-					onChange={(e) => {
+							splitter_regex: " ",
+							display_splitter_regex: "\\.",
+							completion_completeness_regex: ".*(?!p{L})[^d]$",
+							min_accept_length: 4,
+							min_display_length: 50,
+							retrigger_threshold: 48,
+						})
+					}
+				>
+					One word at a time
+				</button>
+				<button
+					onClick={() =>
 						setAcceptSettings({
-							...accept_settings,
-							display_splitter_regex: e.target.value,
-						});
-					}}
-				/>
-			</div>
-			<div className="ai-complete-setting">
-				<span>Completion completeness regex:</span>
-				<input
-					type="text"
-					value={accept_settings.completion_completeness_regex}
-					onChange={(e) => {
+							splitter_regex: "\\.",
+							display_splitter_regex: "\\.",
+							completion_completeness_regex: ".*[^d]$",
+							min_accept_length: 4,
+							min_display_length: 50,
+							retrigger_threshold: 128,
+						})
+					}
+				>
+					One sentence at a time
+				</button>
+				<button
+					onClick={() =>
 						setAcceptSettings({
-							...accept_settings,
-							completion_completeness_regex: e.target.value,
-						});
-					}}
-				/>
-			</div>
-			<div className="ai-complete-setting">
-				<span>Minimum accepted completion length:</span>
-				<input
-					type="number"
-					value={accept_settings.min_accept_length}
-					onChange={(e) => {
+							splitter_regex: "\n",
+							display_splitter_regex: "\n",
+							completion_completeness_regex: ".*$",
+							min_accept_length: 4,
+							min_display_length: 50,
+							retrigger_threshold: 128,
+						})
+					}
+				>
+					One line at a time
+				</button>
+				<button
+					onClick={() =>
 						setAcceptSettings({
-							...accept_settings,
-							min_accept_length: parseInt(e.target.value),
-						});
-					}}
-				/>
+							splitter_regex: "$",
+							display_splitter_regex: "$",
+							completion_completeness_regex: ".*",
+							min_accept_length: 0,
+							min_display_length: 0,
+							retrigger_threshold: 128,
+						})
+					}
+				>
+					Whole completion
+				</button>
 			</div>
-			<div className="ai-complete-setting">
-				<span>Minimum displayed completion length:</span>
-				<input
-					type="number"
-					value={accept_settings.min_display_length}
-					onChange={(e) => {
-						setAcceptSettings({
-							...accept_settings,
-							min_display_length: parseInt(e.target.value),
-						});
-					}}
-				/>
-			</div>
+			<span onClick={() => setExpanded(!expanded)}>
+				{expanded ? "▾" : "▸"} Advanced
+			</span>
+			{expanded && (
+				<div className="ai-complete-advanced">
+					<div className="ai-complete-setting">
+						<span>Splitter regex:</span>
+						<input
+							type="text"
+							value={accept_settings.splitter_regex}
+							onChange={(e) => {
+								setAcceptSettings({
+									...accept_settings,
+									splitter_regex: e.target.value,
+								});
+							}}
+						/>
+					</div>
+					<div className="ai-complete-setting">
+						<span>Preview splitter regex:</span>
+						<input
+							type="text"
+							value={accept_settings.display_splitter_regex}
+							onChange={(e) => {
+								setAcceptSettings({
+									...accept_settings,
+									display_splitter_regex: e.target.value,
+								});
+							}}
+						/>
+					</div>
+					<div className="ai-complete-setting">
+						<span>Completion completeness regex:</span>
+						<input
+							type="text"
+							value={
+								accept_settings.completion_completeness_regex
+							}
+							onChange={(e) => {
+								setAcceptSettings({
+									...accept_settings,
+									completion_completeness_regex:
+										e.target.value,
+								});
+							}}
+						/>
+					</div>
+					<div className="ai-complete-setting">
+						<span>Minimum accepted completion length:</span>
+						<input
+							type="number"
+							value={accept_settings.min_accept_length}
+							onChange={(e) => {
+								setAcceptSettings({
+									...accept_settings,
+									min_accept_length: parseInt(e.target.value),
+								});
+							}}
+						/>
+					</div>
+					<div className="ai-complete-setting">
+						<span>Minimum displayed completion length:</span>
+						<input
+							type="number"
+							value={accept_settings.min_display_length}
+							onChange={(e) => {
+								setAcceptSettings({
+									...accept_settings,
+									min_display_length: parseInt(
+										e.target.value
+									),
+								});
+							}}
+						/>
+					</div>
+				</div>
+			)}
 		</>
 	);
 }

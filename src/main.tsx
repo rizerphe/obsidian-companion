@@ -31,6 +31,7 @@ export interface AcceptSettings {
 	completion_completeness_regex: string;
 	min_accept_length: number;
 	min_display_length: number;
+	retrigger_threshold: number;
 }
 
 interface CompanionSettings {
@@ -61,6 +62,7 @@ const DEFAULT_SETTINGS: CompanionSettings = {
 		completion_completeness_regex: ".*(?!p{L})[^d]$",
 		min_accept_length: 4,
 		min_display_length: 50,
+		retrigger_threshold: 48,
 	},
 	provider_settings: {},
 	presets: [],

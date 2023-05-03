@@ -17,6 +17,7 @@ export class CompletionCacher {
 	cache: Map<Prompt, string>;
 	model: Model;
 	model_settings: string;
+	accept_settings: AcceptSettings;
 	current_fetch: Promise<undefined> | null = null;
 
 	constructor(
@@ -73,11 +74,12 @@ export class CompletionCacher {
 								this.accept_settings.display_splitter_regex
 							)
 						);
-					const display_splitter_index = display_splitter_match
-						? display_splitter_match.index +
-						  display_splitter_match.length +
-						  50
-						: -1;
+					const display_splitter_index =
+						display_splitter_match && display_splitter_match.index
+							? display_splitter_match.index +
+							  display_splitter_match.length +
+							  50
+							: -1;
 					partial_completion = partial_completion.slice(
 						0,
 						display_splitter_index
@@ -86,16 +88,18 @@ export class CompletionCacher {
 					// We also isolate the first word of the completion
 					// This is the part that we will insert
 					// Note that we add more than just the first word if the completion is short
-					// the threshold being 4 characters
+					// the threshold being the min_accept_length setting
 					const complete_splitter_match = completion
-						.slice(4)
+						.slice(this.accept_settings.min_accept_length)
 						.match(new RegExp(this.accept_settings.splitter_regex));
-					const complete_splitter_index = complete_splitter_match
-						? complete_splitter_match.index
-						: -1;
+					const complete_splitter_index =
+						complete_splitter_match && complete_splitter_match.index
+							? complete_splitter_match.index +
+							  this.accept_settings.min_accept_length
+							: -1;
 					const first_word = completion.slice(
 						0,
-						complete_splitter_index + 4
+						complete_splitter_index
 					);
 
 					// We check whether we're getting close to the end of the completion
