@@ -75,7 +75,8 @@ export class CompletionCacher {
 							)
 						);
 					const display_splitter_index =
-						display_splitter_match && display_splitter_match.index
+						display_splitter_match &&
+						display_splitter_match.index != undefined
 							? display_splitter_match.index +
 							  display_splitter_match.length +
 							  50
@@ -93,7 +94,8 @@ export class CompletionCacher {
 						.slice(this.accept_settings.min_accept_length)
 						.match(new RegExp(this.accept_settings.splitter_regex));
 					const complete_splitter_index =
-						complete_splitter_match && complete_splitter_match.index
+						complete_splitter_match &&
+						complete_splitter_match.index != undefined
 							? complete_splitter_match.index +
 							  this.accept_settings.min_accept_length
 							: -1;
