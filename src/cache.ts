@@ -2,7 +2,7 @@ import { AcceptSettings } from "./main";
 import { Prompt, Model } from "./complete/complete";
 import { Suggestion } from "codemirror-companion-extension";
 
-function findLastRegexIndex(regex, str) {
+function findLastRegexIndex(regex: RegExp, str: string) {
 	let match;
 	let lastIndex = -1;
 
