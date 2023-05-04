@@ -116,6 +116,8 @@ function ProviderModelChooser({
 	useEffect(() => {
 		const fetch_model = async () => {
 			if (!provider) return;
+			setAvailableModels([]);
+			_setModel(null);
 			const available_models = await provider.get_models(
 				plugin.settings.provider_settings[provider.id]?.settings
 			);
@@ -137,7 +139,7 @@ function ProviderModelChooser({
 			);
 		};
 		fetch_model();
-	}, [plugin.settings.model, provider]);
+	}, [plugin.settings.model, provider, providerSettings]);
 
 	const setProvider = (provider_id: string) => {
 		_setProvider(
