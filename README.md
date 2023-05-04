@@ -57,6 +57,7 @@ This plugin can use more than one source of completions, with more on the way. C
 -   Ask **ChatGPT** to "Continue the following"
 -   Use the usual **GPT-3** models
 -   Use **AI21's Jurassic-2** models
+-   Use models hosted on **goose.ai**
 
 If there are any sources you'd like to suggest, feel free to open an issue.
 
