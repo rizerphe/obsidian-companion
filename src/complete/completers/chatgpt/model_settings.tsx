@@ -39,7 +39,7 @@ export function SettingsUI({
 	saveSettings: (settings: string) => void;
 }) {
 	const parsed_settings = parse_settings(settings);
-	console.log(parsed_settings);
+
 	return (
 		<>
 			<SettingsItem name="Rate limits" />
