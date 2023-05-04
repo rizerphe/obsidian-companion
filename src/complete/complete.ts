@@ -20,7 +20,7 @@ export interface Model {
 export interface Completer {
 	id: string;
 	name: string;
-	description: string;
+	description: React.ReactNode;
 	get_models: (settings: string) => Promise<Model[]>;
 	Settings?: React.ElementType<{
 		settings: string | null;

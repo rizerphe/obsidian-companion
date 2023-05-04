@@ -28,7 +28,18 @@ export function SettingsUI({
 	saveSettings: (settings: string) => void;
 }) {
 	return (
-		<SettingsItem name="API key">
+		<SettingsItem
+			name="API key"
+			description={
+				<>
+					Your{" "}
+					<a href="https://goose.ai/dashboard/apikeys">
+						goose.ai API key
+					</a>
+					.
+				</>
+			}
+		>
 			<input
 				type="text"
 				value={parse_settings(settings).api_key}

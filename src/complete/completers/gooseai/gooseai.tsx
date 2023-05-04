@@ -1,3 +1,4 @@
+import React from "react";
 import { Completer, Model, Prompt } from "../../complete";
 import {
 	SettingsUI as ProviderSettingsUI,
@@ -39,14 +40,20 @@ export default class OpenAIModel implements Model {
 			}
 		).then((res) => res.json());
 
-		return response.data.choices[0].text || "";
+		return response.choices[0].text || "";
 	}
 }
 
 export class GooseAIComplete implements Completer {
 	id: string = "gooseai";
 	name: string = "GooseAI";
-	description: string = "GooseAI's models";
+	description = (
+		<>
+			<a href="https://goose.ai">GooseAI</a> - a fully managed
+			NLP-as-a-Service, delivered via API. It is comparable to OpenAI in
+			this regard.
+		</>
+	);
 
 	async get_models(settings: string) {
 		const settings_obj = parse_settings(settings);
