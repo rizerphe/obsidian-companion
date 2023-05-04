@@ -257,10 +257,8 @@ export function SettingsUI({
 				name="API key"
 				description={
 					<>
-						Your{" "}
-						<a href="https://studio.ai21.com/account">
-							AI21 API key
-						</a>
+						Your AI21{" "}
+						<a href="https://studio.ai21.com/account">API key</a>
 					</>
 				}
 			>
@@ -290,7 +288,6 @@ export function SettingsUI({
 						<a href="https://docs.ai21.com/reference/j2-complete-ref">
 							here
 						</a>
-						.
 					</>
 				}
 			/>

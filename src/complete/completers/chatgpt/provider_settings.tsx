@@ -32,7 +32,17 @@ export function SettingsUI({
 	saveSettings: (settings: string) => void;
 }) {
 	return (
-		<SettingsItem name="API key">
+		<SettingsItem
+			name="API key"
+			description={
+				<>
+					Your OpenAI{" "}
+					<a href="https://platform.openai.com/account/api-keys">
+						API key
+					</a>
+				</>
+			}
+		>
 			<input
 				type="text"
 				value={parse_settings(settings).api_key}

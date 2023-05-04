@@ -36,7 +36,6 @@ export function SettingsUI({
 					<a href="https://goose.ai/dashboard/apikeys">
 						goose.ai API key
 					</a>
-					.
 				</>
 			}
 		>

@@ -287,7 +287,16 @@ function AcceptSettingsComponent({
 
 	return (
 		<>
-			<SettingsItem name="Delay">
+			<SettingsItem
+				name="Delay"
+				description={
+					<>
+						The plugin will wait this long before getting a
+						completion. The lower the delay, the faster the
+						completions, but the more they cost.
+					</>
+				}
+			>
 				<input
 					type="number"
 					value={delay}
@@ -297,7 +306,15 @@ function AcceptSettingsComponent({
 				/>
 				<span>ms</span>
 			</SettingsItem>
-			<SettingsItem name="Use a CodeMiror Keybind">
+			<SettingsItem
+				name="Use a CodeMiror Keybind"
+				description={
+					<>
+						Allows you to use simpler keybinds like <code>Tab</code>{" "}
+						but might not work with other plugins.
+					</>
+				}
+			>
 				<div
 					className={
 						"checkbox-container" +
@@ -309,7 +326,16 @@ function AcceptSettingsComponent({
 				/>
 			</SettingsItem>
 			{keybind === null ? null : (
-				<SettingsItem name="CodeMiror Keybind">
+				<SettingsItem
+					name="CodeMiror Keybind"
+					description={
+						<>
+							<a href="https://codemirror.net/docs/ref/#h_key_bindings">
+								Keybind format
+							</a>
+						</>
+					}
+				>
 					<input
 						type="text"
 						value={keybind || ""}
@@ -319,67 +345,77 @@ function AcceptSettingsComponent({
 					/>
 				</SettingsItem>
 			)}
-			<SettingsItem name="Accept">
-				<button
-					onClick={() =>
-						setAcceptSettings({
-							splitter_regex: " ",
-							display_splitter_regex: "\\.",
-							completion_completeness_regex: ".*(?!p{L})[^d]$",
-							min_accept_length: 4,
-							min_display_length: 50,
-							retrigger_threshold: 48,
-						})
-					}
-				>
-					One word at a time
-				</button>
-				<button
-					onClick={() =>
-						setAcceptSettings({
-							splitter_regex: "\\.",
-							display_splitter_regex: "\\.",
-							completion_completeness_regex: ".*[^d]$",
-							min_accept_length: 4,
-							min_display_length: 50,
-							retrigger_threshold: 128,
-						})
-					}
-				>
-					One sentence at a time
-				</button>
-				<button
-					onClick={() =>
-						setAcceptSettings({
-							splitter_regex: "\n",
-							display_splitter_regex: "\n",
-							completion_completeness_regex: ".*$",
-							min_accept_length: 4,
-							min_display_length: 50,
-							retrigger_threshold: 128,
-						})
-					}
-				>
-					One line at a time
-				</button>
-				<button
-					onClick={() =>
-						setAcceptSettings({
-							splitter_regex: "$",
-							display_splitter_regex: "$",
-							completion_completeness_regex: ".*",
-							min_accept_length: 0,
-							min_display_length: 0,
-							retrigger_threshold: 128,
-						})
-					}
-				>
-					Whole completion
-				</button>
+			<SettingsItem
+				name="Accept"
+				description={
+					<div style={{ minWidth: "max-content" }}>
+						<div>These are presets.</div>
+						<div onClick={() => setExpanded(!expanded)}>
+							{expanded ? "▾" : "▸"} Advanced controls
+						</div>
+					</div>
+				}
+			>
+				<div className="ai-complete-accept-presets">
+					<button
+						onClick={() =>
+							setAcceptSettings({
+								splitter_regex: " ",
+								display_splitter_regex: "\\.",
+								completion_completeness_regex:
+									".*(?!p{L})[^d]$",
+								min_accept_length: 4,
+								min_display_length: 50,
+								retrigger_threshold: 48,
+							})
+						}
+					>
+						One word at a time
+					</button>
+					<button
+						onClick={() =>
+							setAcceptSettings({
+								splitter_regex: "\\.",
+								display_splitter_regex: "\\.",
+								completion_completeness_regex: ".*[^d]$",
+								min_accept_length: 4,
+								min_display_length: 50,
+								retrigger_threshold: 128,
+							})
+						}
+					>
+						One sentence at a time
+					</button>
+					<button
+						onClick={() =>
+							setAcceptSettings({
+								splitter_regex: "\n",
+								display_splitter_regex: "\n",
+								completion_completeness_regex: ".*$",
+								min_accept_length: 4,
+								min_display_length: 50,
+								retrigger_threshold: 128,
+							})
+						}
+					>
+						One line at a time
+					</button>
+					<button
+						onClick={() =>
+							setAcceptSettings({
+								splitter_regex: "$",
+								display_splitter_regex: "$",
+								completion_completeness_regex: ".*",
+								min_accept_length: 0,
+								min_display_length: 0,
+								retrigger_threshold: 128,
+							})
+						}
+					>
+						Whole completion
+					</button>
+				</div>
 			</SettingsItem>
-			<span onClick={() => setExpanded(!expanded)}>
-				{expanded ? "▾" : "▸"} Advanced
-			</span>
 			{expanded && (
 				<div className="ai-complete-advanced-settings">
 					<SettingsItem
@@ -505,7 +541,16 @@ export default function SettingsComponent({
 	return (
 		<>
 			<>
-				<SettingsItem name="Enable by default">
+				<SettingsItem
+					name="Enable by default"
+					description={
+						<>
+							If the plugin isn't enabled by default, use Ctrl+P
+							and search for Toggle Completion. You can also add a
+							shortcut to it
+						</>
+					}
+				>
 					<div
 						className={
 							"checkbox-container" +
