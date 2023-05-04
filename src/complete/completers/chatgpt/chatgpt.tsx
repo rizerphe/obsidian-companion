@@ -1,3 +1,4 @@
+import { Notice } from "obsidian";
 import { Completer, Model, Prompt } from "../../complete";
 import {
 	SettingsUI as ProviderSettingsUI,
@@ -34,37 +35,68 @@ export default class ChatGPT implements Model {
 		});
 		const api = new OpenAIApi(config);
 
-		const response = await api.createChatCompletion({
-			messages: [
-				{
-					role: "system",
-					content: model_settings.system_prompt,
-				},
-				{
-					role: "user",
-					content: Mustache.render(
-						model_settings.user_prompt,
-						prompt
-					),
-				},
-			],
-			model: this.id,
-			max_tokens: 64,
-			presence_penalty: model_settings.presence_penalty,
-			frequency_penalty: model_settings.frequency_penalty,
-			top_p: model_settings.top_p,
-			temperature: model_settings.temperature,
-		});
+		try {
+			const response = await api.createChatCompletion({
+				messages: [
+					{
+						role: "system",
+						content: model_settings.system_prompt,
+					},
+					{
+						role: "user",
+						content: Mustache.render(
+							model_settings.user_prompt,
+							prompt
+						),
+					},
+				],
+				model: this.id,
+				max_tokens: 64,
+				presence_penalty: model_settings.presence_penalty,
+				frequency_penalty: model_settings.frequency_penalty,
+				top_p: model_settings.top_p,
+				temperature: model_settings.temperature,
+			});
 
-		if (response.status === 401) {
-			throw new Error("OpenAI API key is invalid");
-		} else if (response.status !== 200) {
-			throw new Error(`OpenAI API returned status ${response.status}`);
+			if (response.status !== 200) {
+				throw new Error(
+					`OpenAI API returned status ${response.status}`
+				);
+			}
+
+			const completion = response.data.choices[0].message?.content || "";
+
+			return this.interpret(prompt, completion);
+		} catch (e) {
+			if (e.response?.status === 429) {
+				const notice: any = new Notice("", 5000); // Woo another "any"
+				const notice_element = notice.noticeEl as HTMLElement;
+				notice_element.createEl("span", {
+					text: "OpenAI API rate limit exceeded. If you haven't done so yet, consider",
+				});
+				notice_element.createEl("a", {
+					text: " upgrading your plan.",
+					href: "https://platform.openai.com/account/billing/overview",
+				});
+				return "";
+			} else if (e.response?.status === 401) {
+				const notice: any = new Notice("", 5000);
+				const notice_element = notice.noticeEl as HTMLElement;
+				notice_element.createEl("span", {
+					text: "OpenAI API key is invalid. Please double-check your ",
+				});
+				notice_element.createEl("a", {
+					text: "API key",
+					href: "https://platform.openai.com/account/api-keys",
+				});
+				notice_element.createEl("span", {
+					text: "in the plugin settings.",
+				});
+				return "";
+			} else {
+				throw e;
+			}
 		}
-
-		const completion = response.data.choices[0].message?.content || "";
-
-		return this.interpret(prompt, completion);
 	}
 
 	interpret(prompt: Prompt, completion: string) {
