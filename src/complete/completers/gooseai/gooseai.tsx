@@ -35,7 +35,9 @@ export default class OpenAIModel implements Model {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					prompt: prompt.prefix,
+					prompt: prompt.prefix.slice(
+						-(this.provider_settings.context_length || 2048)
+					),
 				}),
 			}
 		).then((res) => res.json());
