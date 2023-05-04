@@ -83,6 +83,33 @@ function Presets({
 				/>
 				<button onClick={savePreset}>Save preset</button>
 			</SettingsItem>
+			{plugin.settings.presets.length ? (
+				<SettingsItem
+					name="Fallback"
+					description={
+						<>
+							You can use a preset as the fallback if the current
+							model is not available, for example when you are
+							rate limited.
+						</>
+					}
+				>
+					<select
+						className="dropdown"
+						value={plugin.settings.fallback || ""}
+						onChange={(e) => {
+							plugin.settings.fallback = e.target.value;
+							plugin.saveSettings();
+							setForceUpdate(force_update + 1);
+						}}
+					>
+						<option value={""}>Don't use a fallback</option>
+						{plugin.settings.presets.map((preset) => (
+							<option value={preset.name}>{preset.name}</option>
+						))}
+					</select>
+				</SettingsItem>
+			) : null}
 		</>
 	);
 }
@@ -161,7 +188,7 @@ function ProviderModelChooser({
 				...plugin.settings.provider_settings[provider.id]?.models,
 			},
 		};
-		plugin.active_model = null;
+		plugin.models = [];
 		plugin.saveData(plugin.settings);
 	};
 
@@ -182,7 +209,7 @@ function ProviderModelChooser({
 				[model.id]: settings,
 			},
 		};
-		plugin.active_model = null;
+		plugin.models = [];
 		plugin.saveData(plugin.settings);
 	};
 
@@ -267,8 +294,8 @@ function AcceptSettingsComponent({
 	const setAcceptSettings = (settings: AcceptSettings) => {
 		_setAcceptSettings(settings);
 		plugin.settings.accept = settings;
-		if (plugin.active_model) {
-			plugin.active_model.accept_settings = settings;
+		for (const model of plugin.models) {
+			model.cacher.accept_settings = settings;
 		}
 		plugin.saveData(plugin.settings);
 	};

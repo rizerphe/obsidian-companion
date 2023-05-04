@@ -102,7 +102,7 @@ export class CompletionCacher {
 						complete_splitter_match.index != undefined
 							? complete_splitter_match.index +
 							  this.accept_settings.min_accept_length
-							: -1;
+							: undefined;
 					const first_word = completion.slice(
 						0,
 						complete_splitter_index
@@ -185,20 +185,22 @@ export class CompletionCacher {
 			return this.strip(cached);
 		}
 		if (this.current_fetch) {
-			await this.current_fetch;
+			await this.current_fetch.finally(() => (this.current_fetch = null));
 		}
 		cached = this.get_cached(prompt);
 		if (cached) {
 			return this.strip(cached);
 		}
+
 		this.current_fetch = this.fetch(prompt);
+		this.current_fetch.finally(() => (this.current_fetch = null));
 		await this.current_fetch;
-		this.current_fetch = null;
 
 		cached = this.get_cached(prompt);
 		if (cached) {
 			return this.strip(cached);
 		}
+
 		return this.strip({
 			display_suggestion: "",
 			complete_suggestion: "",

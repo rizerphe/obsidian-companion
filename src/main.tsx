@@ -9,7 +9,10 @@ import {
 } from "obsidian";
 import { createRoot } from "react-dom/client";
 import React from "react";
-import { forceableInlineSuggestion } from "codemirror-companion-extension";
+import {
+	forceableInlineSuggestion,
+	Suggestion,
+} from "codemirror-companion-extension";
 import SettingsComponent from "./settings/settings";
 import { CompletionCacher } from "./cache";
 import { available } from "./complete/completers";
@@ -49,6 +52,7 @@ interface CompanionSettings {
 		};
 	};
 	presets: CompanionModelSettings[];
+	fallback: string | null;
 }
 
 const DEFAULT_SETTINGS: CompanionSettings = {
@@ -67,14 +71,19 @@ const DEFAULT_SETTINGS: CompanionSettings = {
 	},
 	provider_settings: {},
 	presets: [],
+	fallback: null,
 };
 
 export default class Companion extends Plugin {
 	settings: CompanionSettings;
 	enabled: boolean = false;
-	active_provider: string = "";
 	force_fetch: () => void = () => {};
-	active_model: CompletionCacher | null = null;
+	last_used_model: CompletionCacher | null = null;
+	models: {
+		provider: string;
+		model: string;
+		cacher: CompletionCacher;
+	}[] = [];
 	statusBarItemEl: HTMLElement | null = null;
 
 	async setupModelChoice() {
@@ -268,7 +277,7 @@ export default class Companion extends Plugin {
 	}
 
 	async acceptCompletion(editor: Editor) {
-		const suggestion = this.active_model?.last_suggestion;
+		const suggestion = this.last_used_model?.last_suggestion;
 		if (suggestion) {
 			editor.replaceRange(suggestion, editor.getCursor());
 			editor.setCursor({
@@ -285,46 +294,119 @@ export default class Companion extends Plugin {
 		}
 	}
 
-	async complete(prefix: string, suffix: string) {
-		if (this.active_provider != this.settings.provider) {
-			this.active_provider = this.settings.provider;
-			this.active_model = null;
+	async get_model(
+		provider: string,
+		model: string
+	): Promise<CompletionCacher | null> {
+		for (const cached_model of this.models) {
+			if (
+				cached_model.provider === provider &&
+				cached_model.model === model
+			) {
+				return cached_model.cacher;
+			}
 		}
+		const available_provider = available.find(
+			(available_provider) => available_provider.id === provider
+		);
+		if (!available_provider) return null;
+		const provider_settings = this.settings.provider_settings[provider];
+		const available_models = await available_provider.get_models(
+			provider_settings ? provider_settings.settings : ""
+		);
+		const available_model: Model | undefined = available_models.find(
+			(available_model: Model) => available_model.id == model
+		);
+		if (!available_model) return null;
+		const cached = new CompletionCacher(
+			available_model,
+			provider_settings
+				? provider_settings.models[available_model.id]
+				: "",
+			this.settings.accept,
+			this.settings.keybind == null
+		);
+		this.models.push({
+			provider: provider,
+			model: available_model.id,
+			cacher: cached,
+		});
+		return cached;
+	}
 
+	async _complete(
+		prefix: string,
+		suffix: string,
+		provider: string,
+		model: string
+	) {
+		const cacher = await this.get_model(provider, model);
+		if (!cacher) return null;
+		const completion = await cacher.complete({
+			prefix: prefix,
+			suffix: suffix,
+		});
+		this.last_used_model = cacher;
+		return completion;
+	}
+
+	async select_first_available_model() {
+		const provider = available.find(
+			(provider) => provider.id === this.settings.provider
+		);
 		const provider_settings =
-			this.settings.provider_settings[this.active_provider];
-		if (
-			!this.active_model ||
-			this.active_model.model.id != this.settings.model
-		) {
-			const provider = available.find(
-				(provider) => provider.id == this.active_provider
-			);
-			if (!provider) return "";
-			const available_models = await provider.get_models(
-				provider_settings ? provider_settings.settings : ""
-			);
-			const model: Model =
-				available_models.find(
-					(model: Model) => model.id == this.settings.model
-				) || available_models[0];
-			this.settings.model = model.id;
-			this.active_model = new CompletionCacher(
-				model,
-				provider_settings ? provider_settings.models[model.id] : "",
-				this.settings.accept,
-				this.settings.keybind == null
-			);
-		}
+			this.settings.provider_settings[this.settings.provider];
+		this.settings.model =
+			(await provider
+				?.get_models(
+					provider_settings ? provider_settings.settings : ""
+				)
+				.then((models) => models[0].id)) || "";
+	}
 
+	async fallback_complete(prefix: string, suffix: string) {
+		if (this.settings.fallback) {
+			try {
+				const fallback = this.settings.presets.find(
+					(preset) => preset.name === this.settings.fallback
+				);
+				if (!fallback) return "";
+				return (
+					(await this._complete(
+						prefix,
+						suffix,
+						fallback.provider,
+						fallback.model
+					)) || ""
+				);
+			} catch (e) {
+				new Notice(`Error completing (fallback): ${e.message}`);
+			}
+		}
+		return "";
+	}
+
+	async complete(
+		prefix: string,
+		suffix: string
+	): Promise<Suggestion | string> {
 		try {
-			return await this.active_model.complete({
-				prefix: prefix,
-				suffix: suffix,
-			});
+			const completion = await this._complete(
+				prefix,
+				suffix,
+				this.settings.provider,
+				this.settings.model
+			);
+			if (completion === null) {
+				this.select_first_available_model();
+				return await this.complete(prefix, suffix);
+			}
+			return completion;
 		} catch (e) {
-			new Notice(`Error completing: ${e.message}`);
-			return "";
+			if (e.message) {
+				new Notice(`Error completing: ${e.message}`);
+			}
+			return await this.fallback_complete(prefix, suffix);
 		}
 	}
 }

@@ -40,6 +40,17 @@ export function SettingsUI({
 }) {
 	return (
 		<>
+			<SettingsItem name="Rate limits" />
+			<p>
+				If you're getting rate limit errors, OpenAI doesn't allow you to
+				make that many requests. I can't do anything about that. You can
+				either{" "}
+				<a href="https://platform.openai.com/account/billing/overview">
+					upgrade your plan
+				</a>{" "}
+				or set up a fallback preset. A fallback will be used while the
+				plugin waits for the rate limit to reset.
+			</p>
 			<SettingsItem name="System prompt" />
 			<textarea
 				className="ai-complete-chatgpt-full-width"

@@ -16,6 +16,8 @@ export default class ChatGPT implements Model {
 	id: string;
 	name: string;
 	description: string;
+	rate_limit_notice: Notice | null = null;
+	rate_limit_notice_timeout: number | null = null;
 	Settings = ModelSettingsUI;
 
 	provider_settings: ProviderSettings;
@@ -69,16 +71,25 @@ export default class ChatGPT implements Model {
 			return this.interpret(prompt, completion);
 		} catch (e) {
 			if (e.response?.status === 429) {
-				const notice: any = new Notice("", 5000); // Woo another "any"
-				const notice_element = notice.noticeEl as HTMLElement;
-				notice_element.createEl("span", {
-					text: "OpenAI API rate limit exceeded. If you haven't done so yet, consider",
-				});
-				notice_element.createEl("a", {
-					text: " upgrading your plan.",
-					href: "https://platform.openai.com/account/billing/overview",
-				});
-				return "";
+				if (this.rate_limit_notice) {
+					window.clearTimeout(this.rate_limit_notice_timeout!);
+					this.rate_limit_notice_timeout = window.setTimeout(() => {
+						this.rate_limit_notice?.hide();
+						this.rate_limit_notice = null;
+						this.rate_limit_notice_timeout = null;
+					}, 5000);
+				} else {
+					this.rate_limit_notice = new Notice(
+						'Rate limit exceeded. Check the "Rate limits" section in the plugin settings for more information.',
+						250000
+					);
+					this.rate_limit_notice_timeout = window.setTimeout(() => {
+						this.rate_limit_notice?.hide();
+						this.rate_limit_notice = null;
+						this.rate_limit_notice_timeout = null;
+					}, 5000);
+				}
+				throw new Error();
 			} else if (e.response?.status === 401) {
 				const notice: any = new Notice("", 5000);
 				const notice_element = notice.noticeEl as HTMLElement;
@@ -92,7 +103,7 @@ export default class ChatGPT implements Model {
 				notice_element.createEl("span", {
 					text: "in the plugin settings.",
 				});
-				return "";
+				throw new Error();
 			} else {
 				throw e;
 			}
