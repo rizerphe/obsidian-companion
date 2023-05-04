@@ -196,6 +196,9 @@ function ProviderModelChooser({
 		if (!provider) return;
 		_setModel(available_models.filter((model) => model.id === model_id)[0]);
 		plugin.settings.model = model_id;
+		_setModelSettings(
+			plugin.settings.provider_settings[provider.id]?.models[model_id]
+		);
 		plugin.saveData(plugin.settings);
 	};
 

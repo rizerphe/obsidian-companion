@@ -38,6 +38,8 @@ export function SettingsUI({
 	settings: string | null;
 	saveSettings: (settings: string) => void;
 }) {
+	const parsed_settings = parse_settings(settings);
+	console.log(parsed_settings);
 	return (
 		<>
 			<SettingsItem name="Rate limits" />
@@ -54,11 +56,11 @@ export function SettingsUI({
 			<SettingsItem name="System prompt" />
 			<textarea
 				className="ai-complete-chatgpt-full-width"
-				value={parse_settings(settings).system_prompt}
+				value={parsed_settings.system_prompt}
 				onChange={(e) =>
 					saveSettings(
 						JSON.stringify({
-							...parse_settings(settings),
+							...parsed_settings,
 							system_prompt: e.target.value,
 						})
 					)
@@ -67,11 +69,11 @@ export function SettingsUI({
 			<SettingsItem name="User prompt" />
 			<textarea
 				className="ai-complete-chatgpt-full-width"
-				value={parse_settings(settings).user_prompt}
+				value={parsed_settings.user_prompt}
 				onChange={(e) =>
 					saveSettings(
 						JSON.stringify({
-							...parse_settings(settings),
+							...parsed_settings,
 							user_prompt: e.target.value,
 						})
 					)
@@ -80,11 +82,15 @@ export function SettingsUI({
 			<SettingsItem name="Temperature">
 				<input
 					type="number"
-					value={parse_settings(settings).temperature}
+					value={
+						parsed_settings.temperature === undefined
+							? ""
+							: parsed_settings.temperature
+					}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
-								...parse_settings(settings),
+								...parsed_settings,
 								temperature: parseFloat(e.target.value),
 							})
 						)
@@ -94,11 +100,15 @@ export function SettingsUI({
 			<SettingsItem name="Top P">
 				<input
 					type="number"
-					value={parse_settings(settings).top_p}
+					value={
+						parsed_settings.top_p === undefined
+							? ""
+							: parsed_settings.top_p
+					}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
-								...parse_settings(settings),
+								...parsed_settings,
 								top_p: parseFloat(e.target.value),
 							})
 						)
@@ -108,11 +118,15 @@ export function SettingsUI({
 			<SettingsItem name="Presence penalty">
 				<input
 					type="number"
-					value={parse_settings(settings).presence_penalty}
+					value={
+						parsed_settings.presence_penalty === undefined
+							? ""
+							: parsed_settings.presence_penalty
+					}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
-								...parse_settings(settings),
+								...parsed_settings,
 								presence_penalty: parseFloat(e.target.value),
 							})
 						)
@@ -122,11 +136,15 @@ export function SettingsUI({
 			<SettingsItem name="Frequency penalty">
 				<input
 					type="number"
-					value={parse_settings(settings).frequency_penalty}
+					value={
+						parsed_settings.frequency_penalty === undefined
+							? ""
+							: parsed_settings.frequency_penalty
+					}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
-								...parse_settings(settings),
+								...parsed_settings,
 								frequency_penalty: parseFloat(e.target.value),
 							})
 						)
