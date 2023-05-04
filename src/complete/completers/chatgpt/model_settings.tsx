@@ -9,6 +9,7 @@ export const settings_schema = z.object({
 	top_p: z.number().optional(),
 	presence_penalty: z.number().optional(),
 	frequency_penalty: z.number().optional(),
+	prompt_length: z.number().optional(),
 });
 
 export type Settings = z.infer<typeof settings_schema>;
@@ -44,14 +45,14 @@ export function SettingsUI({
 		<>
 			<SettingsItem name="Rate limits" />
 			<p>
-				If you're getting rate limit errors, OpenAI doesn't allow you to
-				make that many requests. I can't do anything about that. You can
-				either{" "}
+				If you're getting rate limit errors, I can't really help. OpenAI
+				doesn't like you using their API too much. You can either{" "}
 				<a href="https://platform.openai.com/account/billing/overview">
 					upgrade your plan
 				</a>{" "}
 				or set up a fallback preset. A fallback will be used while the
-				plugin waits for the rate limit to reset.
+				plugin waits for the rate limit to reset; scroll down to the
+				"Presets" section to set one up.
 			</p>
 			<SettingsItem name="System prompt" />
 			<textarea
@@ -146,6 +147,32 @@ export function SettingsUI({
 							JSON.stringify({
 								...parsed_settings,
 								frequency_penalty: parseFloat(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
+			<SettingsItem
+				name="Prompt length"
+				description={
+					<>
+						The length of both the prefix and the suffix of the
+						prompt, in characters.
+					</>
+				}
+			>
+				<input
+					type="number"
+					value={
+						parsed_settings.prompt_length === undefined
+							? ""
+							: parsed_settings.prompt_length
+					}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parsed_settings,
+								prompt_length: parseInt(e.target.value),
 							})
 						)
 					}
