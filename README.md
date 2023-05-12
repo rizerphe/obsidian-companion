@@ -12,13 +12,12 @@ Uses [codemirror-companion-extension](https://www.npmjs.com/package/codemirror-c
 
 # Installation
 
-Companion is now available in the [Obsidian Community Plugin Directory](https://obsidian.md/plugins). Here's how to install it:
+Companion is now available in the [Obsidian Community Plugin Directory](https://obsidian.md/plugins?id=companion). Here's how to install it:
 
-1. Open Obsidian and navigate to the **Community Plugins** settings page.
-2. Search for "Companion" in the plugin search bar.
-3. Click on the **Install** button next to the Companion plugin.
-4. Once the installation is complete, you will see a confirmation message in the top right corner of the Obsidian window.
-5. Finally, enable the Companion plugin by toggling the switch next to its name in the Community Plugins settings page.
+1. Find [Companion](https://obsidian.md/plugins?id=companion) in the **Community Plugins** settings page in Obsidian.
+2. Click on the **Install** button next to the Companion plugin.
+3. Once the installation is complete, you will see a confirmation message in the top right corner of the Obsidian window.
+4. Finally, enable the Companion plugin by toggling the switch next to its name in the Community Plugins settings page.
 
 # How to Use
 
