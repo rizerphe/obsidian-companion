@@ -68,12 +68,19 @@ export default class OobaboogaModel implements Model {
 
 	async createCompletion(request: any): Promise<any> {
 		try {
-			const response = await axios.post('http://localhost:5000/api/v1/generate', request);
-			if (response.status === 200) {
-			return response.data.results[0].text;
-			} else {
-			throw new Error(`API returned status ${response.status}`);
-			}
+			const response = await fetch(
+				`http://localhost:5000/api/v1/generate`,
+				{
+					method: "POST",
+					mode: "no-cors",
+					headers: {
+						"Content-Type": "application/json",//"application/x-www-form-urlencoded",
+					},
+					body: JSON.stringify(request),
+				}
+			)//.then((res) => res.json());
+
+			return response;
 		} catch (error) {
 			throw new Error(`Request failed: ${error.message}`);
 		}
