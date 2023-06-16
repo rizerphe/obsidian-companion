@@ -193,7 +193,7 @@ export default class OobaboogaModel implements Model {
 		return model_response_schema.parse(currently_enabled_model).result;
 	}
 
-	async assure_correct_model(): Promise<void> {
+	async load(): Promise<void> {
 		const currently_enabled_model = await this.get_current_model();
 		if (currently_enabled_model !== this.id) {
 			await this.set_model();
@@ -202,8 +202,6 @@ export default class OobaboogaModel implements Model {
 
 	async create_completion(request: any): Promise<any> {
 		try {
-			await this.assure_correct_model();
-
 			const response = await fetch(
 				`${this.provider_settings.host_url}/api/v1/generate`,
 				{
