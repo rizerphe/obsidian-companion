@@ -22,8 +22,12 @@ const parse_model_settings = (settings: string): ModelSettings => {
 	}
 };
 
-const model_response_schema = z.object({
+const model_list_response_schema = z.object({
 	result: z.array(z.string()),
+});
+
+const model_response_schema = z.object({
+	result: z.optional(z.string()),
 });
 
 export default class OobaboogaModel implements Model {
@@ -64,8 +68,45 @@ export default class OobaboogaModel implements Model {
 		this.provider_settings = parse_settings(provider_settings);
 	}
 
-	async createCompletion(request: any): Promise<any> {
+	async set_model(): Promise<void> {
+		await fetch(`${this.provider_settings.host_url}/api/v1/model`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				action: "load",
+				model_name: this.id,
+			}),
+		}).then((res) => res.json());
+	}
+
+	async get_current_model(): Promise<string | undefined> {
+		const currently_enabled_model = await fetch(
+			`${this.provider_settings.host_url}/api/v1/model`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Cache-Control": "no-cache",
+				},
+			}
+		).then((res) => res.json());
+
+		return model_response_schema.parse(currently_enabled_model).result;
+	}
+
+	async assure_correct_model(): Promise<void> {
+		const currently_enabled_model = await this.get_current_model();
+		if (currently_enabled_model !== this.id) {
+			await this.set_model();
+		}
+	}
+
+	async create_completion(request: any): Promise<any> {
 		try {
+			await this.assure_correct_model();
+
 			const response = await fetch(
 				`${this.provider_settings.host_url}/api/v1/generate`,
 				{
@@ -86,9 +127,7 @@ export default class OobaboogaModel implements Model {
 	async complete(prompt: Prompt, settings: string): Promise<string> {
 		const parsed_settings = parse_model_settings(settings);
 
-		// TODO: add model choice
-
-		const response = await this.createCompletion({
+		const response = await this.create_completion({
 			prompt: prompt.prefix.slice(-parsed_settings.context_length),
 			max_new_tokens: 120,
 			do_sample: true,
@@ -132,7 +171,7 @@ export class OobaboogaComplete implements Completer {
 			}
 		).then((res) => res.json());
 
-		return model_response_schema
+		return model_list_response_schema
 			.parse(models)
 			.result.map((model) => new OobaboogaModel(model, settings));
 	}
