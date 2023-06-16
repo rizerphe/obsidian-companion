@@ -7,7 +7,6 @@ import {
 } from "./provider_settings";
 import SettingsItem from "../../../components/SettingsItem";
 import { z } from "zod";
-import axios from 'axios';
 
 export const model_settings_schema = z.object({
 	context_length: z.number().int().positive(),
@@ -22,6 +21,10 @@ const parse_model_settings = (settings: string): ModelSettings => {
 		};
 	}
 };
+
+const model_response_schema = z.object({
+	result: z.array(z.string()),
+});
 
 export default class OobaboogaModel implements Model {
 	id: string;
@@ -54,40 +57,36 @@ export default class OobaboogaModel implements Model {
 		</SettingsItem>
 	);
 
-	constructor(
-		id: string,
-		name: string,
-		description: string,
-		provider_settings: string
-	) {
+	constructor(id: string, provider_settings: string) {
 		this.id = id;
-		this.name = name;
-		this.description = description;
+		this.name = id;
+		this.description = `Oobabooga ${id} model`;
 		this.provider_settings = parse_settings(provider_settings);
-	};
+	}
 
 	async createCompletion(request: any): Promise<any> {
 		try {
 			const response = await fetch(
-				`http://localhost:5000/api/v1/generate`,
+				`${this.provider_settings.host_url}/api/v1/generate`,
 				{
 					method: "POST",
-					mode: "no-cors",
 					headers: {
-						"Content-Type": "application/json",//"application/x-www-form-urlencoded",
+						"Content-Type": "application/json",
 					},
 					body: JSON.stringify(request),
 				}
-			)//.then((res) => res.json());
+			).then((res) => res.json());
 
 			return response;
 		} catch (error) {
 			throw new Error(`Request failed: ${error.message}`);
 		}
-	};
+	}
 
 	async complete(prompt: Prompt, settings: string): Promise<string> {
 		const parsed_settings = parse_model_settings(settings);
+
+		// TODO: add model choice
 
 		const response = await this.createCompletion({
 			prompt: prompt.prefix.slice(-parsed_settings.context_length),
@@ -109,17 +108,10 @@ export default class OobaboogaModel implements Model {
 			truncation_length: 2048,
 			ban_eos_token: false,
 			skip_special_tokens: true,
-			stopping_strings: []
+			stopping_strings: [],
 		});
-		
 
-		if (response.status === 401) {
-			throw new Error("API connection refused");
-		} else if (response.status !== 200) {
-			throw new Error(`API returned status ${response.status}`);
-		}
-
-		return response.data.choices[0].text || "";
+		return response.results[0].text || "";
 	}
 }
 
@@ -129,7 +121,20 @@ export class OobaboogaComplete implements Completer {
 	description: string = "Oobabooga text generation webui";
 
 	async get_models(settings: string) {
-		return [new OobaboogaModel(this.id, this.name, this.description, settings)];
+		const models = await fetch(
+			`${parse_settings(settings).host_url}/api/v1/model`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ action: "list" }),
+			}
+		).then((res) => res.json());
+
+		return model_response_schema
+			.parse(models)
+			.result.map((model) => new OobaboogaModel(model, settings));
 	}
 
 	Settings = ProviderSettingsUI;

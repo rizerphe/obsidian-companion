@@ -2,21 +2,25 @@ import * as React from "react";
 import SettingsItem from "../../../components/SettingsItem";
 
 export interface Settings {
-	api_key: string;
+	host_url: string;
 }
+
+const default_settings: Settings = {
+	host_url: "http://localhost:5000",
+};
 
 export const parse_settings = (data: string | null): Settings => {
 	if (data === null) {
-		return { api_key: "" };
+		return default_settings;
 	}
 	try {
 		const settings = JSON.parse(data);
-		if (typeof settings.api_key !== "string") {
-			return { api_key: "" };
+		if (typeof settings.host_url !== "string") {
+			return default_settings;
 		}
 		return settings;
 	} catch (e) {
-		return { api_key: "" };
+		return default_settings;
 	}
 };
 
@@ -29,21 +33,25 @@ export function SettingsUI({
 }) {
 	return (
 		<SettingsItem
-			name="API key"
+			name="API URL"
 			description={
 				<>
-					Your oobabooga api host{" "}
-					<a>
-						API key
-					</a>
+					Your{" "}
+					<a href="https://github.com/rizerphe/text-generation-webui-with-cors">
+						oobabooga
+					</a>{" "}
+					api host URL - note that (at least for now) this does not
+					use the original webui, but a modified version that allows
+					CORS requests. Make sure you're running it in text
+					completion (not chat) mode, too.
 				</>
 			}
 		>
 			<input
 				type="text"
-				value={parse_settings(settings).api_key}
+				value={parse_settings(settings).host_url}
 				onChange={(e) =>
-					saveSettings(JSON.stringify({ api_key: e.target.value }))
+					saveSettings(JSON.stringify({ host_url: e.target.value }))
 				}
 			/>
 		</SettingsItem>
