@@ -334,6 +334,12 @@ export default class Companion extends Plugin {
 		return cached;
 	}
 
+	async load_model(model: CompletionCacher) {
+		if (this.last_used_model?.model.id === model.model.id) return;
+		await this.last_used_model?.model?.unload?.();
+		await model?.model?.load?.();
+	}
+
 	async _complete(
 		prefix: string,
 		suffix: string,
@@ -342,6 +348,7 @@ export default class Companion extends Plugin {
 	) {
 		const cacher = await this.get_model(provider, model);
 		if (!cacher) return null;
+		await this.load_model(cacher);
 		const completion = await cacher.complete({
 			prefix: prefix,
 			suffix: suffix,
