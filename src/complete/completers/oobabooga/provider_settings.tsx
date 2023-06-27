@@ -37,13 +37,11 @@ export function SettingsUI({
 			description={
 				<>
 					Your{" "}
-					<a href="https://github.com/rizerphe/text-generation-webui-with-cors">
+					<a href="https://github.com/oobabooga/text-generation-webui-with-cors">
 						oobabooga
 					</a>{" "}
-					api host URL - note that (at least for now) this does not
-					use the original webui, but a modified version that allows
-					CORS requests. Make sure you're running it in text
-					completion (not chat) mode, too.
+					api host URL. Make sure you're running it in text completion
+					(not chat) mode.
 				</>
 			}
 		>
