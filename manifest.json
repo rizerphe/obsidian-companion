@@ -1,7 +1,7 @@
 {
 	"id": "companion",
 	"name": "Companion",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"minAppVersion": "1.1.16",
 	"description": "Autocomplete with AI, including ChatGPT, through a copilot-like interface.",
 	"author": "rizerphe",

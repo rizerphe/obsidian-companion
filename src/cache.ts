@@ -66,7 +66,8 @@ export class CompletionCacher {
 								0,
 								findLastRegexIndex(
 									new RegExp(
-										this.accept_settings.splitter_regex
+										this.accept_settings.splitter_regex,
+										"gi"
 									),
 									completion
 								)
