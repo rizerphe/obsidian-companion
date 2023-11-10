@@ -1,4 +1,5 @@
 import React from "react";
+import { Notice } from "obsidian";
 import { Completer, Model, Prompt } from "../../complete";
 import available_models from "./models.json";
 import {
@@ -6,7 +7,7 @@ import {
 	Settings,
 	parse_settings,
 } from "./provider_settings";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import SettingsItem from "../../../components/SettingsItem";
 import { z } from "zod";
 
@@ -28,6 +29,8 @@ export default class OpenAIModel implements Model {
 	id: string;
 	name: string;
 	description: string;
+	rate_limit_notice: Notice | null = null;
+	rate_limit_notice_timeout: number | null = null;
 
 	provider_settings: Settings;
 	Settings = ({
@@ -69,24 +72,70 @@ export default class OpenAIModel implements Model {
 
 	async complete(prompt: Prompt, settings: string): Promise<string> {
 		const parsed_settings = parse_model_settings(settings);
-		const config = new Configuration({
+		const api = new OpenAI({
 			apiKey: this.provider_settings.api_key,
-		});
-		const api = new OpenAIApi(config);
-
-		const response = await api.createCompletion({
-			model: this.id,
-			prompt: prompt.prefix.slice(-parsed_settings.context_length),
-			max_tokens: 64,
+			dangerouslyAllowBrowser: true,
 		});
 
-		if (response.status === 401) {
-			throw new Error("OpenAI API key is invalid");
-		} else if (response.status !== 200) {
-			throw new Error(`OpenAI API returned status ${response.status}`);
+		try {
+			const response = await api.completions.create({
+				model: this.id,
+				prompt: prompt.prefix.slice(-parsed_settings.context_length),
+				max_tokens: 64,
+			});
+
+			return response.choices[0].text || "";
+		} catch (e) {
+			this.parse_api_error(e);
+			throw e;
 		}
+	}
 
-		return response.data.choices[0].text || "";
+	create_rate_limit_notice() {
+		if (this.rate_limit_notice) {
+			window.clearTimeout(this.rate_limit_notice_timeout!);
+			this.rate_limit_notice_timeout = window.setTimeout(() => {
+				this.rate_limit_notice?.hide();
+				this.rate_limit_notice = null;
+				this.rate_limit_notice_timeout = null;
+			}, 5000);
+		} else {
+			this.rate_limit_notice = new Notice(
+				'Rate limit exceeded. Check the "Rate limits" section in the plugin settings for more information.',
+				250000
+			);
+			this.rate_limit_notice_timeout = window.setTimeout(() => {
+				this.rate_limit_notice?.hide();
+				this.rate_limit_notice = null;
+				this.rate_limit_notice_timeout = null;
+			}, 5000);
+		}
+	}
+
+	create_api_key_notice() {
+		const notice: any = new Notice("", 5000);
+		const notice_element = notice.noticeEl as HTMLElement;
+		notice_element.createEl("span", {
+			text: "OpenAI API key is invalid. Please double-check your ",
+		});
+		notice_element.createEl("a", {
+			text: "API key",
+			href: "https://platform.openai.com/account/api-keys",
+		});
+		notice_element.createEl("span", {
+			text: " in the plugin settings.",
+		});
+	}
+
+	parse_api_error(e: { status?: number }) {
+		if (e.status === 429) {
+			this.create_rate_limit_notice();
+			throw new Error();
+		} else if (e.status === 401) {
+			this.create_api_key_notice();
+			throw new Error();
+		}
+		throw e;
 	}
 }
 

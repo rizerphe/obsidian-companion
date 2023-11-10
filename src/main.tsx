@@ -42,6 +42,7 @@ interface CompanionSettings {
 	enable_by_default: boolean;
 	keybind: string | null;
 	delay_ms: number;
+	stream: boolean;
 	accept: AcceptSettings;
 	provider_settings: {
 		[provider: string]: {
@@ -61,9 +62,10 @@ const DEFAULT_SETTINGS: CompanionSettings = {
 	enable_by_default: false,
 	keybind: "Tab",
 	delay_ms: 2000,
+	stream: true,
 	accept: {
 		splitter_regex: " ",
-		display_splitter_regex: "\\.",
+		display_splitter_regex: "[.?!:;]",
 		completion_completeness_regex: ".*(?!p{L})[^d]$",
 		min_accept_length: 4,
 		min_display_length: 50,
@@ -251,29 +253,33 @@ export default class Companion extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	async triggerCompletion() {
+	async *triggerCompletion(): AsyncGenerator<Suggestion, void, unknown> {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-		if (!view) return "";
-		if (!this.enabled) return "";
+		if (!view) return;
+		if (!this.enabled) return;
 		if ((view.editor as any)?.cm?.cm?.state?.keyMap === "vim") {
 			// Don't complete if vim mode is enabled
 			// (hehe I know more about the types than typescript does)
 			// (thus I can use "as any" wooooo)
-			return "";
+			return;
 		}
 
 		const cursor = view.editor.getCursor();
 		const currentLine = view.editor.getLine(cursor.line);
-		if (!currentLine.length) return ""; // Don't complete on empty lines
+		if (!currentLine.length) {
+			yield {
+				display_suggestion: "",
+				complete_suggestion: "",
+			};
+			return;
+		} // Don't complete on empty lines
 		const prefix = view.editor.getRange({ line: 0, ch: 0 }, cursor);
 		const suffix = view.editor.getRange(cursor, {
 			line: view.editor.lastLine(),
 			ch: view.editor.getLine(view.editor.lastLine()).length,
 		});
 
-		const completion = await this.complete(prefix, suffix);
-
-		return completion;
+		yield* this.complete(prefix, suffix);
 	}
 
 	async acceptCompletion(editor: Editor) {
@@ -340,21 +346,25 @@ export default class Companion extends Plugin {
 		await model?.model?.load?.();
 	}
 
-	async _complete(
+	async *_complete(
 		prefix: string,
 		suffix: string,
 		provider: string,
 		model: string
-	) {
+	): AsyncGenerator<Suggestion> {
 		const cacher = await this.get_model(provider, model);
-		if (!cacher) return null;
+		if (!cacher) throw { name: "ModelNotFound" };
 		await this.load_model(cacher);
-		const completion = await cacher.complete({
-			prefix: prefix,
-			suffix: suffix,
-		});
-		this.last_used_model = cacher;
-		return completion;
+		for await (let completion of cacher.complete(
+			{
+				prefix: prefix,
+				suffix: suffix,
+			},
+			this.settings.stream
+		)) {
+			this.last_used_model = cacher;
+			yield completion;
+		}
 	}
 
 	async select_first_available_model() {
@@ -371,49 +381,56 @@ export default class Companion extends Plugin {
 				.then((models) => models[0].id)) || "";
 	}
 
-	async fallback_complete(prefix: string, suffix: string) {
+	async *fallback_complete(
+		prefix: string,
+		suffix: string
+	): AsyncGenerator<Suggestion> {
 		if (this.settings.fallback) {
 			try {
 				const fallback = this.settings.presets.find(
 					(preset) => preset.name === this.settings.fallback
 				);
-				if (!fallback) return "";
-				return (
-					(await this._complete(
-						prefix,
-						suffix,
-						fallback.provider,
-						fallback.model
-					)) || ""
+				if (!fallback) return;
+				const completion = this._complete(
+					prefix,
+					suffix,
+					fallback.provider,
+					fallback.model
 				);
+				if (!completion) return;
+				yield* completion;
 			} catch (e) {
 				new Notice(`Error completing (fallback): ${e.message}`);
 			}
 		}
-		return "";
 	}
 
-	async complete(
+	async *complete(
 		prefix: string,
 		suffix: string
-	): Promise<Suggestion | string> {
+	): AsyncGenerator<Suggestion> {
 		try {
-			const completion = await this._complete(
-				prefix,
-				suffix,
-				this.settings.provider,
-				this.settings.model
-			);
-			if (completion === null) {
-				this.select_first_available_model();
-				return await this.complete(prefix, suffix);
+			try {
+				const completion = this._complete(
+					prefix,
+					suffix,
+					this.settings.provider,
+					this.settings.model
+				);
+				yield* completion;
+			} catch (e) {
+				if (e.name === "ModelNotFound") {
+					this.select_first_available_model();
+					yield* this.complete(prefix, suffix);
+					return;
+				}
+				throw e;
 			}
-			return completion;
 		} catch (e) {
 			if (e.message) {
 				new Notice(`Error completing: ${e.message}`);
 			}
-			return await this.fallback_complete(prefix, suffix);
+			return this.fallback_complete(prefix, suffix);
 		}
 	}
 }

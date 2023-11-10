@@ -15,6 +15,7 @@ export interface Model {
 	}>;
 
 	complete: (prompt: Prompt, settings: string) => Promise<string>;
+	iterate?: (prompt: Prompt, settings: string) => AsyncGenerator<string>;
 
 	// The plugin will assure that unload() is called before load()
 	// is called for another model, and that load() is called before

@@ -391,7 +391,7 @@ function AcceptSettingsComponent({
 						onClick={() =>
 							setAcceptSettings({
 								splitter_regex: " ",
-								display_splitter_regex: "\\.",
+								display_splitter_regex: "[.?!:;]",
 								completion_completeness_regex:
 									".*(?!p{L})[^d]$",
 								min_accept_length: 4,
@@ -406,7 +406,7 @@ function AcceptSettingsComponent({
 						onClick={() =>
 							setAcceptSettings({
 								splitter_regex: "\\.",
-								display_splitter_regex: "\\.",
+								display_splitter_regex: "[.?!:;]",
 								completion_completeness_regex: ".*[^d]$",
 								min_accept_length: 4,
 								min_display_length: 50,
@@ -567,6 +567,7 @@ export default function SettingsComponent({
 	const [enable_by_default, setEnableByDefault] = useState(
 		plugin.settings.enable_by_default
 	);
+	const [streaming_mode, setStreamingMode] = useState(plugin.settings.stream);
 
 	return (
 		<>
@@ -590,6 +591,30 @@ export default function SettingsComponent({
 							setEnableByDefault(!enable_by_default);
 							plugin.settings.enable_by_default =
 								!enable_by_default;
+							plugin.saveData(plugin.settings);
+						}}
+					/>
+				</SettingsItem>
+				<SettingsItem
+					name="Streaming mode (experimental)"
+					description={
+						<>
+							When enabled, the completion will be updated as it
+							comes in, instead of waiting for the whole
+							completion to be ready. This is useful for
+							completions that take a long time to generate, but
+							may produce buggy results in some cases.
+						</>
+					}
+				>
+					<div
+						className={
+							"checkbox-container" +
+							(streaming_mode ? " is-enabled" : "")
+						}
+						onClick={(_e) => {
+							setStreamingMode(!streaming_mode);
+							plugin.settings.stream = !streaming_mode;
 							plugin.saveData(plugin.settings);
 						}}
 					/>
