@@ -72,7 +72,7 @@ class ExhaustableConsumable<T> {
 				if (next_item) {
 					yield next_item.item;
 				} else {
-					continue;
+					break;
 				}
 			}
 		}
