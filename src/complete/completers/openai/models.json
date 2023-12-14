@@ -23,5 +23,10 @@
         "id": "ada",
         "name": "Ada",
         "description": "Capable of very simple tasks, usually the fastest model in the GPT-3 series, and lowest cost."
+    },
+    {
+        "id": "gpt-3.5-turbo-instruct-0914",
+        "name": "GPT-3.5 Turbo (preview)",
+        "description": "A new model that is faster and more capable than Davinci-003. Used by ChatGPT."
     }
 ]
