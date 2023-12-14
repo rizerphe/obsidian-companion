@@ -8,22 +8,17 @@ import {
 	parse_settings,
 } from "./provider_settings";
 import OpenAI from "openai";
-import SettingsItem from "../../../components/SettingsItem";
+import {
+  SettingsUI as ModelSettingsUI,
+  parse_settings as parse_model_settings,
+  Settings as settings,
+} from "./model_settings";
 import { z } from "zod";
 
 export const model_settings_schema = z.object({
 	context_length: z.number().int().positive(),
 });
 export type ModelSettings = z.infer<typeof model_settings_schema>;
-const parse_model_settings = (settings: string): ModelSettings => {
-	try {
-		return model_settings_schema.parse(JSON.parse(settings));
-	} catch (e) {
-		return {
-			context_length: 4000,
-		};
-	}
-};
 
 export default class OpenAIModel implements Model {
 	id: string;
@@ -33,30 +28,7 @@ export default class OpenAIModel implements Model {
 	rate_limit_notice_timeout: number | null = null;
 
 	provider_settings: Settings;
-	Settings = ({
-		settings,
-		saveSettings,
-	}: {
-		settings: string | null;
-		saveSettings: (settings: string) => void;
-	}) => (
-		<SettingsItem
-			name="Context length"
-			description="In characters, how much context should the model get"
-		>
-			<input
-				type="number"
-				value={parse_model_settings(settings || "").context_length}
-				onChange={(e) =>
-					saveSettings(
-						JSON.stringify({
-							context_length: parseInt(e.target.value),
-						})
-					)
-				}
-			/>
-		</SettingsItem>
-	);
+	Settings = ModelSettingsUI;
 
 	constructor(
 		id: string,
@@ -80,7 +52,7 @@ export default class OpenAIModel implements Model {
 		try {
 			const response = await api.completions.create({
 				model: this.id,
-				prompt: prompt.prefix.slice(-parsed_settings.context_length),
+				prompt: prompt.prefix.slice(-(parsed_settings.context_length || 6000)),
 				max_tokens: 64,
 			});
 
