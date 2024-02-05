@@ -51,11 +51,14 @@ class ExhaustableConsumable<T> {
 		}
 
 		let next_items: { item: T }[] = [];
-		let next_item_promise: Promise<void> = Promise.resolve();
+		let next_item_promise: Promise<void> | null = Promise.resolve();
 		const add_resolver = () => {
 			next_item_promise = new Promise<void>((resolve) => {
 				this.consumers.push((item) => {
-					if (item == null) {
+					if (item === null) {
+						// I have no clue why this is necessary
+						// but oh well, as long as it works
+						next_item_promise = null;
 						return resolve();
 					}
 					next_items.push(item);
@@ -65,7 +68,7 @@ class ExhaustableConsumable<T> {
 			});
 		};
 		add_resolver();
-		while (!this.exhausted) {
+		while (!this.exhausted && next_item_promise !== null) {
 			await next_item_promise;
 			while (next_items.length > 0) {
 				const next_item = next_items.shift();
