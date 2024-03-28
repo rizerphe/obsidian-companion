@@ -1,15 +1,14 @@
-import * as React from "react";
-import SettingsItem from "../../../components/SettingsItem";
+import React from "react";
 import { z } from "zod";
+import SettingsItem from "../../../components/SettingsItem";
 
 export const settings_schema = z.object({
 	system_prompt: z.string(),
 	user_prompt: z.string(),
+	prompt_length: z.number().optional(),
 	temperature: z.number().optional(),
 	top_p: z.number().optional(),
-	presence_penalty: z.number().optional(),
-	frequency_penalty: z.number().optional(),
-	prompt_length: z.number().optional(),
+	top_k: z.number().optional(),
 });
 
 export type Settings = z.infer<typeof settings_schema>;
@@ -18,6 +17,7 @@ const default_settings: Settings = {
 	system_prompt:
 		"You are trying to give a long suggestion on how to complete the user's message. Complete in the language of the original message. Write only the completion and nothing else. Do not include the user's text in your message. Only include the completion.",
 	user_prompt: "Continue the following:\n\n{{prefix}}",
+	prompt_length: 256,
 };
 
 export const parse_settings = (data: string | null): Settings => {
@@ -30,7 +30,7 @@ export const parse_settings = (data: string | null): Settings => {
 	} catch (e) {
 		return default_settings;
 	}
-};
+}
 
 export function SettingsUI({
 	settings,
@@ -80,14 +80,24 @@ export function SettingsUI({
 					)
 				}
 			/>
+			<SettingsItem name="Max tokens">
+				<input
+					type="number"
+					value={parsed_settings.prompt_length}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parsed_settings,
+								prompt_length: parseInt(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
 			<SettingsItem name="Temperature">
 				<input
 					type="number"
-					value={
-						parsed_settings.temperature === undefined
-							? ""
-							: parsed_settings.temperature
-					}
+					value={parsed_settings.temperature}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
@@ -101,11 +111,7 @@ export function SettingsUI({
 			<SettingsItem name="Top P">
 				<input
 					type="number"
-					value={
-						parsed_settings.top_p === undefined
-							? ""
-							: parsed_settings.top_p
-					}
+					value={parsed_settings.top_p}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
@@ -116,63 +122,15 @@ export function SettingsUI({
 					}
 				/>
 			</SettingsItem>
-			<SettingsItem name="Presence penalty">
+			<SettingsItem name="Top K">
 				<input
 					type="number"
-					value={
-						parsed_settings.presence_penalty === undefined
-							? ""
-							: parsed_settings.presence_penalty
-					}
+					value={parsed_settings.top_k}
 					onChange={(e) =>
 						saveSettings(
 							JSON.stringify({
 								...parsed_settings,
-								presence_penalty: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem name="Frequency penalty">
-				<input
-					type="number"
-					value={
-						parsed_settings.frequency_penalty === undefined
-							? ""
-							: parsed_settings.frequency_penalty
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								frequency_penalty: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem
-				name="Prompt length"
-				description={
-					<>
-						The length of both the prefix and the suffix of the
-						prompt, in characters.
-					</>
-				}
-			>
-				<input
-					type="number"
-					value={
-						parsed_settings.prompt_length === undefined
-							? ""
-							: parsed_settings.prompt_length
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								prompt_length: parseInt(e.target.value),
+								top_K: parseFloat(e.target.value),
 							})
 						)
 					}

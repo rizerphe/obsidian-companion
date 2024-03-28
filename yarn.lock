@@ -2,6 +2,21 @@
 # yarn lockfile v1
 
 
+"@anthropic-ai/sdk@^0.19.0":
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.19.0.tgz#a0dc20998b383ef3406be723d92940fecd1aee3f"
+  integrity sha512-mv4JtBGLKtpi7XK6Car2Tb+xwdgOuaMtRxxJoO27tqFESgGWdlxSWU65ntjIXAFFLABbRCtVFsnXTBS1AlF6NQ==
+  dependencies:
+    "@types/node" "^18.11.18"
+    "@types/node-fetch" "^2.6.4"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.2.1"
+    digest-fetch "^1.3.0"
+    form-data-encoder "1.7.2"
+    formdata-node "^4.3.2"
+    node-fetch "^2.6.7"
+    web-streams-polyfill "^3.2.1"
+
 "@codemirror/autocomplete@^6.0.0":
   version "6.6.0"
   resolved "https://registry.yarnpkg.com/@codemirror/autocomplete/-/autocomplete-6.6.0.tgz#9c0ea57792b405a391599bd80acae19b8c4c6ff5"
