@@ -12,7 +12,6 @@ import {
 } from "./model_settings";
 import Anthropic from "@anthropic-ai/sdk";
 import Mustache from "mustache";
-import ContentBlockDeltaEvent = Anthropic.ContentBlockDeltaEvent;
 
 class AnthropicAI implements Model {
 	id: string;
@@ -51,15 +50,10 @@ class AnthropicAI implements Model {
 	async generate_messages(
 		prompt: Prompt,
 		model_settings: {
-			system_prompt: string;
 			user_prompt: string;
 		}
 	): Promise<{ role: "assistant" | "user"; content: string }[]> {
 		return [
-			{
-				role: "assistant",
-				content: model_settings.system_prompt,
-			},
 			{
 				role: "user",
 				content: Mustache.render(model_settings.user_prompt, prompt),
@@ -129,6 +123,7 @@ class AnthropicAI implements Model {
 	get_api() {
 		return new Anthropic({
 			apiKey: this.provider_settings.api_key,
+			baseURL: this.provider_settings.host_url,
 		});
 	}
 
@@ -142,6 +137,7 @@ class AnthropicAI implements Model {
 				messages: await this.generate_messages(prompt, model_settings),
 				model: this.id,
 				max_tokens: 64,
+				system: model_settings.system_prompt,
 			});
 
 			return response.content[0].text;
@@ -159,6 +155,7 @@ class AnthropicAI implements Model {
 			const stream = await api.messages.create({
 				...this.model_parameters(model_settings),
 				messages: await this.generate_messages(prompt, model_settings),
+				system: model_settings.system_prompt,
 				model: this.id,
 				max_tokens: 64,
 				stream: true,
