@@ -1,6 +1,6 @@
 # Obsidian Companion
 
-Companion is an Obsidian plugin that adds an **AI-powered autocomplete** feature to your note-taking and personal knowledge management platform. With Companion, you can write notes more quickly and easily by receiving suggestions for completing words, phrases, and even entire sentences based on the context of your writing. The autocomplete feature uses OpenAI's state-of-the-art **GPT-3 and GPT-3.5 models, including ChatGPT**, among others, to generate smart suggestions that are tailored to your specific writing style and preferences. Support for more models is planned, too.
+Companion is an Obsidian plugin that adds an **AI-powered autocomplete** feature to your note-taking and personal knowledge management platform. With Companion, you can write notes more quickly and easily by receiving suggestions for completing words, phrases, and even entire sentences based on the context of your writing. The autocomplete feature uses OpenAI's state-of-the-art **GPT-3 and GPT-3.5, including ChatGPT, and locally hosted Ollama models**, among others, to generate smart suggestions that are tailored to your specific writing style and preferences. Support for more models is planned, too.
 
 Companion's autocomplete feature is designed to be unobtrusive, providing suggestions in ghost text that can be accepted or ignored by the you as you see fit, similar to what github copilot does. With Companion, you can write notes more efficiently and effectively, leveraging the power of AI to enhance your productivity and creativity. Whether you're a student, a researcher, or a knowledge worker, Companion can help you to take your note-taking and knowledge management to the next level.
 
@@ -46,6 +46,10 @@ To use Companion with OpenAI's ChatGPT models on your mobile device, follow thes
 6. While writing a note, tap on the newly added button in the toolbar whenever you want to accept the suggested completion.
 
 If you have any issues with installation or usage, feel free to submit an issue at the [plugin's GitHub repository](https://github.com/rizerphe/obsidian-companion).
+
+## Ollama
+
+The main two reason you would do this are latency and pricing. With ollama and a small model - such as phi-3 - you can freely lower the delay as much as you'd want, and the frequent requests will not cost you a fortune. To use ollama with this plugin, make sure the ollama service is running and switch the provider to ollama - that's it!
 
 # Presets
 

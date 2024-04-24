@@ -1,11 +1,12 @@
 {
 	"id": "companion",
 	"name": "Companion",
-	"version": "1.6.3",
+	"version": "1.7.0",
 	"minAppVersion": "1.1.16",
-	"description": "Autocomplete with AI, including ChatGPT, through a copilot-like interface.",
+	"description": "Autocomplete with AI, including ChatGPT and ollama, through a copilot-like interface.",
 	"author": "rizerphe",
 	"authorUrl": "https://github.com/rizerphe",
 	"fundingUrl": "https://www.buymeacoffee.com/rizerphe",
 	"isDesktopOnly": false
 }
+
