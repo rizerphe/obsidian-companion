@@ -140,6 +140,7 @@ export default class ChatGPT implements Model {
 	get_api() {
 		return new OpenAI({
 			apiKey: this.provider_settings.api_key,
+			baseURL: this.provider_settings.base_url,
 			dangerouslyAllowBrowser: true,
 		});
 	}
