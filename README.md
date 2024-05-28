@@ -39,7 +39,7 @@ Once you've completed these steps, the Companion plugin will be ready to suggest
 To use Companion with OpenAI's ChatGPT models on your mobile device, follow these steps:
 
 1. Launch the Obsidian app on your mobile device.
-2. Access the settings menu by tapping on the three-dot icon in the top left corner of the app, and then the seettings gear.
+2. Access the settings menu by tapping on the three-dot icon in the top left corner of the app, and then the settings gear.
 3. Select "Mobile" from the options.
 4. In the mobile settings, locate the "More toolbar options" section.
 5. Look for the "Companion: Accept completion" command in the list of available commands and add it to your toolbar.
