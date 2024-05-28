@@ -7,6 +7,7 @@ export const settings_schema = z.object({
 	user_prompt: z.string(),
 	temperature: z.number().optional(),
 	prompt_length: z.number().optional(),
+	max_tokens: z.number().optional(),
 });
 
 export type Settings = z.infer<typeof settings_schema>;
@@ -15,6 +16,7 @@ const default_settings: Settings = {
 	system_prompt: "",
 	user_prompt:
 		'{{#context}}Context:\n\n{{context}}\n\n=================================\n{{/context}}Do not start with "...". Continue the following paragraph:\n\n{{last_line}}',
+	max_tokens: 100,
 };
 
 export const parse_settings = (data: string | null): Settings => {
@@ -42,7 +44,7 @@ export function SettingsUI({
 		<>
 			<SettingsItem name="System prompt" />
 			<textarea
-				className="ai-complete-ollama-full-width"
+				className="ai-complete-groq-full-width"
 				value={parsed_settings.system_prompt}
 				onChange={(e) =>
 					saveSettings(
@@ -55,7 +57,7 @@ export function SettingsUI({
 			/>
 			<SettingsItem name="User prompt" />
 			<textarea
-				className="ai-complete-ollama-full-width"
+				className="ai-complete-groq-full-width"
 				value={parsed_settings.user_prompt}
 				onChange={(e) =>
 					saveSettings(
@@ -79,6 +81,24 @@ export function SettingsUI({
 							JSON.stringify({
 								...parsed_settings,
 								temperature: parseFloat(e.target.value),
+							})
+						)
+					}
+				/>
+			</SettingsItem>
+			<SettingsItem name="Prompt length">
+				<input
+					type="number"
+					value={
+						parsed_settings.prompt_length === undefined
+							? ""
+							: parsed_settings.prompt_length
+					}
+					onChange={(e) =>
+						saveSettings(
+							JSON.stringify({
+								...parsed_settings,
+								prompt_length: parseFloat(e.target.value),
 							})
 						)
 					}

@@ -47,9 +47,13 @@ To use Companion with OpenAI's ChatGPT models on your mobile device, follow thes
 
 If you have any issues with installation or usage, feel free to submit an issue at the [plugin's GitHub repository](https://github.com/rizerphe/obsidian-companion).
 
+## Groq
+
+Groq is an ultrafast model provider, and for now (end of May 2024) is fully free - their paid plans are still "coming soon". Groq has very generous usage quotas. This is probably the best choice right now. Just switch the provider to groq, set your API key and you're good to go!
+
 ## Ollama
 
-The main two reason you would do this are latency and pricing. With ollama and a small model - such as phi-3 - you can freely lower the delay as much as you'd want, and the frequent requests will not cost you a fortune. To use ollama with this plugin, make sure the ollama service is running and switch the provider to ollama - that's it!
+Ollama is a tool for running models locally, and yet another solution to problems with latency and pricing. With ollama and a small model - such as phi-3 - you can freely lower the delay as much as you'd want, and the frequent requests will not cost you a fortune. To use ollama with this plugin, make sure the ollama service is running and switch the provider to ollama - that's it!
 
 # Presets
 
