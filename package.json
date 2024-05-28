@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-companion",
-	"version": "1.7.0",
+	"version": "1.8.0",
 	"description": "Autocomplete with AI, including ChatGPT, through a copilot-like interface.",
 	"main": "main.js",
 	"scripts": {
